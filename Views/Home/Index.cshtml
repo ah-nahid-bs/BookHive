@@ -1,6 +1,137 @@
 @{
     ViewData["Title"] = "Home";
+    var categories = ViewBag.Categories as IEnumerable<string>; 
+    var featuredItems = ViewBag.FeaturedItems;
+    var discountedProducts = ViewBag.DiscountedProducts;
+    var trendingBooks = ViewBag.TrendingBooks;
+    var bestSellers = ViewBag.BestSellers;
+    var newArrivals = ViewBag.NewArrivals;
 }
 
-<h1>Welcome to BookHive</h1>
-<a class="btn btn-primary" href="/Books">Browse Books</a>
+<div class="container mt-4">
+    <!-- Category Navigation -->
+    <div class="d-flex flex-wrap justify-content-center mb-4">
+        @if (categories != null)
+        {
+            foreach (var category in categories)
+            {
+                <a class="btn btn-outline-primary m-2" href="/Books/Category/@category">@category</a>
+            }
+        }
+    </div>
+
+    <!-- Featured Items -->
+    <section class="mb-5">
+        <h2 class="mb-3">📚 Featured Items</h2>
+        <div class="row">
+            @if (featuredItems != null)
+            {
+                foreach (var book in featuredItems)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
+                            <div class="card-body">
+                                <h5 class="card-title">@book.Title</h5>
+                                <p class="card-text">@book.Author</p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Discounted Products -->
+    <section class="mb-5">
+        <h2 class="mb-3 text-danger">🔥 Discounted Products</h2>
+        <div class="row">
+            @if (discountedProducts != null)
+            {
+                foreach (var book in discountedProducts)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 border-danger">
+                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
+                            <div class="card-body">
+                                <h5 class="card-title">@book.Title</h5>
+                                <p class="card-text text-muted"><del>$@book.OriginalPrice</del> <strong>$@book.DiscountedPrice</strong></p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-danger">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Trending Books This Month -->
+    <section class="mb-5">
+        <h2 class="mb-3">📈 Trending This Month</h2>
+        <div class="row">
+            @if (trendingBooks != null)
+            {
+                foreach (var book in trendingBooks)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
+                            <div class="card-body">
+                                <h5 class="card-title">@book.Title</h5>
+                                <p class="card-text">@book.Author</p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-info">Check it out</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- Best Seller Books -->
+    <section class="mb-5">
+        <h2 class="mb-3">🏆 Best Sellers</h2>
+        <div class="row">
+            @if (bestSellers != null)
+            {
+                foreach (var book in bestSellers)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 border-success">
+                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
+                            <div class="card-body">
+                                <h5 class="card-title">@book.Title</h5>
+                                <p class="card-text">@book.Author</p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-success">Top Pick</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <!-- New Arrivals -->
+    <section class="mb-5">
+        <h2 class="mb-3">🆕 New Arrivals</h2>
+        <div class="row">
+            @if (newArrivals != null)
+            {
+                foreach (var book in newArrivals)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
+                            <div class="card-body">
+                                <h5 class="card-title">@book.Title</h5>
+                                <p class="card-text">@book.Author</p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+</div>

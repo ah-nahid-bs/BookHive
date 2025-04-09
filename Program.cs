@@ -1,6 +1,7 @@
 using BookHive.Data;
 using BookHive.Interfaces;
 using BookHive.Models;
+using BookHive.Repositories;
 using BookHive.Services;
 using BookHive.Services.Implementations;
 using BookHive.Services.Interfaces;
@@ -25,6 +26,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IBookService, BookService>(); 
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>(); 
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
