@@ -1,21 +1,55 @@
-using BookHive.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using BookHive.Services.Interfaces; 
 
-namespace BookHive.Controllers
-{
-    public class BooksController : Controller
-    {
-        private readonly DataContext _context;
-        public BooksController(DataContext context)
-        {
-            _context = context;
-        }
+using Microsoft.AspNetCore.Mvc; 
 
-        public async Task<IActionResult> Index()
-        {
-            var books = await _context.Books.Include(b => b.Category).ToListAsync();
-            return View(books);
-        }
-    }
-}
+  
+
+namespace BookHive.Controllers 
+
+{ 
+
+    public class BooksController : Controller 
+
+    { 
+
+        private readonly IBookService _bookService; 
+
+  
+
+        public BooksController(IBookService bookService) 
+
+        { 
+
+            _bookService = bookService; 
+
+        } 
+
+  
+
+        public async Task<IActionResult> Index() 
+
+        { 
+
+            var books = await _bookService.GetBooksAsync(); 
+
+            return View(books); 
+
+        } 
+
+  
+
+        public async Task<IActionResult> Details(int id) 
+
+        { 
+
+            var book = await _bookService.GetBookByIdAsync(id); 
+
+            if (book == null) return NotFound(); 
+
+            return View(book); 
+
+        } 
+
+    } 
+
+} 

@@ -2,6 +2,8 @@ using BookHive.Data;
 using BookHive.Interfaces;
 using BookHive.Models;
 using BookHive.Services;
+using BookHive.Services.Implementations;
+using BookHive.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +20,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Auth/Logout";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
-    
+
+builder.Services.AddScoped<IBookService, BookService>(); 
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+
 
 
 var app = builder.Build();

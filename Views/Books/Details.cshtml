@@ -1,0 +1,8 @@
+@model BookHive.Models.Book
+
+<h2>@Model.Title</h2>
+<p><strong>Author:</strong> @Model.Author</p>
+<p><strong>Price:</strong> $@Model.Price</p>
+<p><strong>Category:</strong> @Model.Category?.Name</p>
+<img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Title" />
+<a class="btn btn-success mt-3" href="/Cart/Add?bookId=@Model.Id">Add to Cart</a>
