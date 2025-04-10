@@ -1,7 +1,5 @@
-namespace BookHive.Interfaces
+namespace BookHive.Interfaces;
+public interface ICategoryService
 {
-    public interface ICategoryService
-    {
-        Task<IEnumerable<string>> GetAllCategoryTitlesAsync();
-    }
+    Task<IEnumerable<string>> GetAllCategoryTitlesAsync();
 }
