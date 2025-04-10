@@ -26,5 +26,11 @@ namespace BookHive.Services
             int minimumSold = 10;//this will be updated later on to reciee form admin
             return await _bookRepository.GetBestSellersAsync(minimumSold);
         }
+        public async Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync()
+        {
+            int topCount = 5; //this will be updated later on to reciee form admin if needed
+            return await _bookRepository.GetTrendingBooksThisMonthAsync(topCount);
+        }
+
     }
 }

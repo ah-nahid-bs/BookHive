@@ -19,11 +19,13 @@ namespace BookHive.Controllers
             var featuredItems = await _bookService.GetFeaturedBooksAsync();
             var newArrivals = await _bookService.GetNewArrivals();
             var bestSellers = await _bookService.GetBestSellersAsync();
+            var trendingBooks = await _bookService.GetTrendingBooksThisMonthAsync();
 
             ViewBag.Categories = categoryTitles;
             ViewBag.FeaturedItems = featuredItems;
             ViewBag.NewArrivals = newArrivals;
             ViewBag.BestSellers = bestSellers;
+            ViewBag.TrendingBooks = trendingBooks;
 
             return View();
         }

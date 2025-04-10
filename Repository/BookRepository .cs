@@ -37,5 +37,24 @@ namespace BookHive.Repositories
                 .OrderByDescending(b => b.TotalSold)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync(int topCount)
+        {
+            var now = DateTime.Now;
+
+            var books = await _context.OrderItems
+                .Where(oi => oi.Order.OrderDate.Month == now.Month && oi.Order.OrderDate.Year == now.Year)
+                .GroupBy(oi => oi.Book)
+                .Select(g => new {
+                    Book = g.Key,
+                    TotalSold = g.Sum(oi => oi.Quantity)
+                })
+                .OrderByDescending(g => g.TotalSold)
+                .Take(topCount)
+                .Select(g => g.Book)
+                .ToListAsync();
+
+            return books;
+        }
+
     }
 }
