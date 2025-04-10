@@ -20,12 +20,14 @@ namespace BookHive.Controllers
             var newArrivals = await _bookService.GetNewArrivals();
             var bestSellers = await _bookService.GetBestSellersAsync();
             var trendingBooks = await _bookService.GetTrendingBooksThisMonthAsync();
+            var discountedBooks = await _bookService.GetDiscountedBooksAsync();
 
             ViewBag.Categories = categoryTitles;
             ViewBag.FeaturedItems = featuredItems;
             ViewBag.NewArrivals = newArrivals;
             ViewBag.BestSellers = bestSellers;
             ViewBag.TrendingBooks = trendingBooks;
+            ViewBag.DiscountedBooks = discountedBooks;
 
             return View();
         }

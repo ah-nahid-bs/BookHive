@@ -11,6 +11,8 @@ namespace BookHive.Models
         public int CategoryId { get; set; }
         public DateOnly PublishDate { get; set; }
         public int TotalSold { get; set; }
+        public bool IsDiscounted { get; set; } = false;
+
 
 
         public Category? Category { get; set; }

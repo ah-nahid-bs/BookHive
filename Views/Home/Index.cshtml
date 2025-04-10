@@ -2,7 +2,7 @@
     ViewData["Title"] = "Home";
     var categories = ViewBag.Categories as IEnumerable<string>; 
     var featuredItems = ViewBag.FeaturedItems;
-    var discountedProducts = ViewBag.DiscountedProducts;
+    var discountedBooks = ViewBag.DiscountedBooks;
     var trendingBooks = ViewBag.TrendingBooks;
     var bestSellers = ViewBag.BestSellers;
     var newArrivals = ViewBag.NewArrivals;
@@ -47,19 +47,23 @@
 
     <!-- Discounted Products -->
     <section class="mb-5">
-        <h2 class="mb-3 text-danger">🔥 Discounted Products</h2>
+        <h2 class="mb-3 text-danger">🔥 Discounted Books</h2>
         <div class="row">
-            @if (discountedProducts != null)
+            @if (discountedBooks!= null)
             {
-                foreach (var book in discountedProducts)
+                foreach (var book in discountedBooks)
                 {
                     <div class="col-md-3 mb-4">
-                        <div class="card h-100 border-danger">
+                        <div class="card h-100">
                             <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" />
                             <div class="card-body">
                                 <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text text-muted"><del>$@book.OriginalPrice</del> <strong>$@book.DiscountedPrice</strong></p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-danger">Buy Now</a>
+                                <p class="card-text">@book.Author</p>
+                                <p class="card-text">
+                                    <span class="text-muted text-decoration-line-through me-2">$@book.OriginalPrice</span>
+                                    <span class="fw-bold text-success">$@book.DiscountedPrice</span>
+                                </p>
+                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">View Details</a>
                             </div>
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 using BookHive.Models;
+using BookHive.ViewModels;
 
 namespace BookHive.Interfaces
 {
@@ -8,5 +9,7 @@ namespace BookHive.Interfaces
         Task<IEnumerable<Book>> GetNewArrivals();
         Task<IEnumerable<Book>> GetBestSellersAsync();
         Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync();
+        Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync();
+
     }
 }

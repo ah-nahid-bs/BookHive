@@ -1,6 +1,7 @@
 using BookHive.Data;
 using BookHive.Interfaces;
 using BookHive.Models;
+using BookHive.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookHive.Repositories
@@ -54,6 +55,21 @@ namespace BookHive.Repositories
                 .ToListAsync();
 
             return books;
+        }
+        public async Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync(decimal discountPercent)
+        {
+            return await _context.Books
+                .Where(b => b.IsDiscounted)
+                .Select(b => new DiscountedBookViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    OriginalPrice = b.Price,
+                    DiscountedPrice = Math.Round(b.Price * (1 - discountPercent / 100), 2),
+                    ImageUrl = b.ImageUrl
+                })
+                .ToListAsync();
         }
 
     }

@@ -1,5 +1,6 @@
 using BookHive.Interfaces;
 using BookHive.Models;
+using BookHive.ViewModels;
 
 namespace BookHive.Services
 {
@@ -30,6 +31,11 @@ namespace BookHive.Services
         {
             int topCount = 5; //this will be updated later on to reciee form admin if needed
             return await _bookRepository.GetTrendingBooksThisMonthAsync(topCount);
+        }
+        public async Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync()
+        {
+            decimal discountPercent = 15m; // this will be updated later on to reciee form admin
+            return await _bookRepository.GetDiscountedBooksAsync(discountPercent);
         }
 
     }

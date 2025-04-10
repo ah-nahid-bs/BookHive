@@ -1,4 +1,5 @@
 using BookHive.Models;
+using BookHive.ViewModels;
 namespace BookHive.Interfaces
 {
     public interface IBookRepository
@@ -7,6 +8,7 @@ namespace BookHive.Interfaces
         Task<IEnumerable<Book>> GetNewArrivals();
         Task<IEnumerable<Book>> GetBestSellersAsync(int minimumSold);
         Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync(int topCount);
+        Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync(decimal discountPercent);
 
     }
 }
