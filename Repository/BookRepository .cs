@@ -21,5 +21,14 @@ namespace BookHive.Repositories
                                  .Take(count)
                                  .ToListAsync();
         }
+        public async Task<IEnumerable<Book>> GetNewArrivals()
+        {
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
+            return await _context.Books
+                .Where(b => b.PublishDate.Year == currentDate.Year && b.PublishDate.Month == currentDate.Month)
+                .OrderByDescending(b => b.PublishDate)
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

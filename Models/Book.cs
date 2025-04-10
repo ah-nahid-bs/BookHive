@@ -9,6 +9,9 @@ namespace BookHive.Models
         public string ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
         public int CategoryId { get; set; }
+        public DateOnly PublishDate { get; set; }
+
+
         public Category? Category { get; set; }
     }
 }

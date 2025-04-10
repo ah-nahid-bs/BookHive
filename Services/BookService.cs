@@ -16,5 +16,10 @@ namespace BookHive.Services
         {
             return await _bookRepository.GetFeaturedBooksAsync(count);
         }
+        
+        public async Task<IEnumerable<Book>> GetNewArrivals()
+        {
+            return await _bookRepository.GetNewArrivals();
+        }
     }
 }

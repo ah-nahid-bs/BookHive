@@ -17,9 +17,10 @@ namespace BookHive.Controllers
         {
             var categoryTitles = await _categoryService.GetAllCategoryTitlesAsync();
             var featuredItems = await _bookService.GetFeaturedBooksAsync();
-
+            var newArrivals = await _bookService.GetNewArrivals();
             ViewBag.Categories = categoryTitles;
             ViewBag.FeaturedItems = featuredItems;
+            ViewBag.NewArrivals = newArrivals;
             return View();
         }
     }
