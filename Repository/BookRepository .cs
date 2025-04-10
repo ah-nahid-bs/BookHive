@@ -30,5 +30,12 @@ namespace BookHive.Repositories
                 .Take(10)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Book>> GetBestSellersAsync(int minimumSold)
+        {
+            return await _context.Books
+                .Where(b => b.TotalSold >= minimumSold)
+                .OrderByDescending(b => b.TotalSold)
+                .ToListAsync();
+        }
     }
 }

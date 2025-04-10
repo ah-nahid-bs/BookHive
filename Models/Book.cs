@@ -10,6 +10,7 @@ namespace BookHive.Models
         public bool IsFeatured { get; set; }
         public int CategoryId { get; set; }
         public DateOnly PublishDate { get; set; }
+        public int TotalSold { get; set; }
 
 
         public Category? Category { get; set; }
