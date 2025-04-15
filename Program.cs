@@ -26,7 +26,8 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>(); 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountService, AccountService>(); // Register AccountService
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     // Password settings

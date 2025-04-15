@@ -1,7 +1,15 @@
 using System.ComponentModel.DataAnnotations;
-namespace BookHive.Models;
-public class LoginViewModel
+
+namespace BookHive.ViewModels
 {
-    [Required] public string UsernameOrEmail { get; set; }
-    [Required, DataType(DataType.Password)] public string Password { get; set; }
+    public class LoginViewModel
+    {
+        [Required]
+        [Display(Name = "Email or Username")]
+        public string UsernameOrEmail { get; set; } = string.Empty;
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = string.Empty;
+    }
 }
