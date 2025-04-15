@@ -1,12 +1,10 @@
-using BookHive.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-namespace BookHive.Data;
-public class DataContext : DbContext
+using BookHive.Models;
+public class DataContext : IdentityDbContext<ApplicationUser>
 {
     public DataContext(DbContextOptions<DataContext> options)
         : base(options) { }
-
-    public DbSet<User> Users { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<CartItem> CartItems => Set<CartItem>();
