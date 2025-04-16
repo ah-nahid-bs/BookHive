@@ -1,0 +1,42 @@
+@model IEnumerable<BookHive.ViewModels.BookViewModel>
+
+@{
+    ViewData["Title"] = "Product Management";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Product List</h2>
+        <a asp-action="Create" class="btn btn-success">Add New Product</a>
+    </div>
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Is Featured</th>
+                <th>Is Discounted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>$@book.Price</td>
+                <td>@book.CategoryName</td>
+                <td>@(book.IsFeatured ? "Yes" : "No")</td>
+                <td>@(book.IsDiscounted ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

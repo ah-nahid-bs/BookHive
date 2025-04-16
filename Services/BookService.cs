@@ -36,6 +36,11 @@ public class BookService : IBookService
         decimal discountPercent = 15m; // this will be updated later on to reciee form admin
         return await _bookRepository.GetDiscountedBooksAsync(discountPercent);
     }
+    public Task<List<Book>> GetAllAsync() => _bookRepository.GetAllAsync();
+    public Task<Book?> GetByIdAsync(int id) => _bookRepository.GetByIdAsync(id);
+    public Task AddAsync(Book book) => _bookRepository.AddAsync(book);
+    public Task UpdateAsync(Book book) => _bookRepository.UpdateAsync(book);
+    public Task DeleteAsync(int id) => _bookRepository.DeleteAsync(id);
 
 }
 

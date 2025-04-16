@@ -1,0 +1,33 @@
+@model List<BookHive.ViewModels.UserViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Change Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.CurrentRole</td>
+                <td>
+                    <form asp-action="ChangeRole" method="post">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <select name="newRole" class="form-control">
+                            <option value="Admin">Admin</option>
+                            <option value="Customer">Customer</option>
+                            <option value="DeliveryBoy">DeliveryBoy</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary mt-1">Change</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
