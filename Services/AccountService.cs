@@ -30,6 +30,11 @@ public class AccountService : IAccountService
         };   
 
         var result = await _userManager.CreateAsync(user, model.Password);
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, "Customer");
+            return true;
+        }
         return result.Succeeded;
     }
     public async Task<bool> LoginAsync(LoginViewModel model)
