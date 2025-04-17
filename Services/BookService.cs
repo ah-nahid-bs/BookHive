@@ -41,6 +41,11 @@ public class BookService : IBookService
     public Task AddAsync(Book book) => _bookRepository.AddAsync(book);
     public Task UpdateAsync(Book book) => _bookRepository.UpdateAsync(book);
     public Task DeleteAsync(int id) => _bookRepository.DeleteAsync(id);
+    public async Task<IEnumerable<Book>> GetBooksByCategoryAsync(string categoryName)
+    {
+        return await _bookRepository.GetBooksByCategoryAsync(categoryName);
+    }
+
 
 }
 

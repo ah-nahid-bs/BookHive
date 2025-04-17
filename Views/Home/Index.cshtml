@@ -15,7 +15,8 @@
         {
             foreach (var category in categories)
             {
-                <a class="btn btn-outline-primary m-2" href="/Books/Category/@category">@category</a>
+                <a class="btn btn-outline-primary m-2" asp-controller="Books" asp-action="Category" asp-route-categoryName="@category">@category</a>
+
             }
         }
     </div>

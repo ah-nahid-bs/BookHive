@@ -91,5 +91,13 @@ public class BookRepository : IBookRepository
             await _context.SaveChangesAsync();
         }
     }
+    public async Task<IEnumerable<Book>> GetBooksByCategoryAsync(string categoryName)
+    {
+        return await _context.Books
+            .Include(b => b.Category)
+            .Where(b => b.Category != null && b.Category.Name == categoryName)
+            .ToListAsync();
+    }
+
 
 }
