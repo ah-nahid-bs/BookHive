@@ -1,0 +1,27 @@
+@model BookHive.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
+        <h2 class="text-center mb-4">Login</h2>
+        <form method="post" asp-action="Login">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="UsernameOrEmail" name="UsernameOrEmail" placeholder="Email or Username" required />
+                <label for="UsernameOrEmail">Email or Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" required />
+                <label for="Password">Password</label>
+            </div>
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            </div>
+            <div class="text-center">
+                <small>Don't have an account? <a href="/Account/SignUp" class="text-decoration-none">Sign up</a></small>
+            </div>
+        </form>
+    </div>
+</div>
