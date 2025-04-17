@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using BookHive.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -19,25 +24,33 @@
                 <button class="btn btn-outline-light" type="submit">Search</button>
             </form>
 
-            <!-- Right: Login/Signup & Cart -->
-            <div class="d-flex align-items-center">
-                <div class="d-flex align-items-center">
-                    @if (User.Identity?.IsAuthenticated ?? false)
+            <!-- Right: Actions -->
+            <div class="d-flex align-items-center gap-2">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    @* Admin Controls *@
+                    @if (User.IsInRole("Admin"))
                     {
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-light">Logout</button>
-                        </form>
+                        <a class="btn btn-outline-warning" href="/Product/Index">Product Management</a>
+                        <a class="btn btn-outline-info" href="/Admin/Users">User Management</a>
+
                     }
                     else
                     {
-                        <a class="btn btn-outline-light me-2" href="/Account/Login">Login</a>
-                        <a class="btn btn-outline-light" href="/Account/SignUp">SignUp</a>
+                        <a class="btn btn-outline-light position-relative" href="/Cart">
+                            Cart <span class="badge bg-light text-dark position-absolute top-0 start-100 translate-middle">0</span>
+                        </a>
                     }
-                </div>
 
-                <a class="btn btn-outline-light" href="/Cart">
-                    Cart <span class="badge bg-light text-dark">0</span>
-                </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-outline-light" href="/Account/Login">Login</a>
+                    <a class="btn btn-outline-light" href="/Account/SignUp">SignUp</a>
+                }
             </div>
         </div>
     </nav>

@@ -9,4 +9,10 @@ public interface IBookRepository
     Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync(int topCount);
     Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync(decimal discountPercent);
 
+    Task<List<Book>> GetAllAsync();
+    Task<Book?> GetByIdAsync(int id);
+    Task AddAsync(Book book);
+    Task UpdateAsync(Book book);
+    Task DeleteAsync(int id);
+
 }
