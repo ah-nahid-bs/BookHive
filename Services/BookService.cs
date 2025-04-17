@@ -45,6 +45,10 @@ public class BookService : IBookService
     {
         return await _bookRepository.GetBooksByCategoryAsync(categoryName);
     }
+    public async Task<Book?> GetBookDetailsAsync(int id)
+    {
+        return await _bookRepository.GetBookByIdAsync(id);
+    }
 
 
 }

@@ -98,6 +98,12 @@ public class BookRepository : IBookRepository
             .Where(b => b.Category != null && b.Category.Name == categoryName)
             .ToListAsync();
     }
+    public async Task<Book?> GetBookByIdAsync(int id)
+    {
+        return await _context.Books
+            .Include(b => b.Category)
+            .FirstOrDefaultAsync(b => b.Id == id);
+    }
 
 
 }

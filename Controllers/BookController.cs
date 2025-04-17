@@ -15,7 +15,6 @@ public class BooksController : Controller
         _bookService = bookService;
     }
 
-    [HttpGet("/Books/Category/{categoryName}")]
     public async Task<IActionResult> Category(string categoryName)
     {
         var books = await _bookService.GetBooksByCategoryAsync(categoryName);
@@ -35,6 +34,28 @@ public class BooksController : Controller
                 CategoryName = b.Category?.Name ?? "N/A",
                 PublishDate = b.PublishDate
             }).ToList()
+        };
+
+        return View(viewModel);
+    }
+    [AllowAnonymous]
+    public async Task<IActionResult> Details(int id)
+    {
+        var book = await _bookService.GetBookDetailsAsync(id);
+        if (book == null)
+            return NotFound();
+
+        var viewModel = new BookViewModel
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+            Price = book.Price,
+            ImageUrl = book.ImageUrl,
+            IsFeatured = book.IsFeatured,
+            IsDiscounted = book.IsDiscounted,
+            CategoryName = book.Category?.Name ?? "N/A",
+            PublishDate = book.PublishDate
         };
 
         return View(viewModel);
