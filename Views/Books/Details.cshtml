@@ -1,4 +1,5 @@
 @model BookHive.ViewModels.BookViewModel
+
 @{
     ViewData["Title"] = Model.Title;
 }
@@ -16,9 +17,14 @@
             <p>demo description</p>
             <h4 class="text-success">₹@Model.Price</h4>
 
-            <div class="mt-4">
-                <button class="btn btn-outline-primary me-2">Add to Cart</button>
-                <button class="btn btn-success">Order Now</button>
+            <div class="mt-4 d-flex align-items-center gap-3">
+                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <input type="number" name="quantity" value="1" min="1" class="form-control w-auto" />
+                    <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+                </form>
+
+                <button class="btn btn-success" disabled>Order Now</button> <!-- Placeholder -->
             </div>
         </div>
     </div>

@@ -38,8 +38,10 @@
                     else
                     {
                         <a class="btn btn-outline-light position-relative" href="/Cart">
-                            Cart <span class="badge bg-light text-dark position-absolute top-0 start-100 translate-middle">0</span>
+                            Cart
+                            @* <vc:cart-count></vc:cart-count> *@
                         </a>
+
                     }
 
                     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
