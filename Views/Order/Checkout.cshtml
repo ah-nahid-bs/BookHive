@@ -1,0 +1,49 @@
+@model BookHive.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Checkout</h2>
+
+    @if (!Model.CartItems.Any())
+    {
+        <div class="alert alert-info">Your cart is empty.</div>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Book</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.CartItems)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td><img src="@item.ImageUrl" alt="Image" width="60" /></td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Total.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Total: @Model.TotalAmount.ToString("C")</h4>
+        </div>
+
+        <form asp-action="PlaceOrder" method="post">
+            <button type="submit" class="btn btn-success">Place Order</button>
+            <a asp-controller="Cart" asp-action="Index" class="btn btn-secondary">Back to Cart</a>
+        </form>
+    }
+</div>
