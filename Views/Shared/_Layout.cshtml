@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BookHive</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -59,6 +60,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
     @RenderSection("Scripts", required: false)
+    <script>
+        function slideLeft(sliderId) {
+            const slider = document.getElementById(sliderId);
+            slider.scrollBy({ left: -250, behavior: 'smooth' });
+        }
+
+        function slideRight(sliderId) {
+            const slider = document.getElementById(sliderId);
+            slider.scrollBy({ left: 250, behavior: 'smooth' });
+        }
+    </script>
+
 </body>
 </html>
