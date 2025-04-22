@@ -1,4 +1,4 @@
-using BookHive.ViewModel;
+using BookHive.ViewModels;
 
 namespace BookHive.Interfaces;
 public interface ICartService

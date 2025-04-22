@@ -42,19 +42,22 @@ public class BookRepository : IBookRepository
         var now = DateTime.Now;
 
         var books = await _context.OrderItems
-            .Where(oi => oi.Order.OrderDate.Month == now.Month && oi.Order.OrderDate.Year == now.Year)
+            .Where(oi => oi.Order != null &&
+                        oi.Order.OrderDate.Month == now.Month &&
+                        oi.Order.OrderDate.Year == now.Year)
             .GroupBy(oi => oi.Book)
-            .Select(g => new {
+            .Select(g => new
+            {
                 Book = g.Key,
                 TotalSold = g.Sum(oi => oi.Quantity)
             })
             .OrderByDescending(g => g.TotalSold)
             .Take(topCount)
-            .Select(g => g.Book)
+            .Select(g => g.Book!)
             .ToListAsync();
-
         return books;
     }
+
     public async Task<IEnumerable<DiscountedBookViewModel>> GetDiscountedBooksAsync(decimal discountPercent)
     {
         return await _context.Books

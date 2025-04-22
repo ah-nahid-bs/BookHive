@@ -1,5 +1,5 @@
 using BookHive.Interfaces;
-using BookHive.ViewModel;
+using BookHive.ViewModels;
 
 namespace BookHive.Services;
 public class CartService : ICartService

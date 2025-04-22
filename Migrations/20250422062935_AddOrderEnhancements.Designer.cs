@@ -4,6 +4,7 @@ using BookHive.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookHive.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250422062935_AddOrderEnhancements")]
+    partial class AddOrderEnhancements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,9 +241,6 @@ namespace BookHive.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderItemId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -252,8 +252,6 @@ namespace BookHive.Migrations
                     b.HasIndex("BookId");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("OrderItemId");
 
                     b.ToTable("OrderItems", (string)null);
                 });
@@ -457,10 +455,6 @@ namespace BookHive.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookHive.Models.OrderItem", null)
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderItemId");
-
                     b.Navigation("Book");
 
                     b.Navigation("Order");
@@ -530,11 +524,6 @@ namespace BookHive.Migrations
             modelBuilder.Entity("BookHive.Models.Order", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("BookHive.Models.OrderItem", b =>
-                {
-                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

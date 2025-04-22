@@ -12,11 +12,13 @@ public class AdminController : Controller
 {
     private readonly IAdminService _adminService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IOrderService _orderService;
 
-    public AdminController(IAdminService adminService, UserManager<ApplicationUser> userManager)
+    public AdminController(IAdminService adminService, UserManager<ApplicationUser> userManager, IOrderService orderService)
     {
         _adminService = adminService;
         _userManager = userManager;
+        _orderService = orderService;
     }
 
     public async Task<IActionResult> Users()
@@ -27,7 +29,6 @@ public class AdminController : Controller
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            
             var userViewModel = new UserViewModel
             {
                 Id = user.Id,
@@ -35,15 +36,11 @@ public class AdminController : Controller
                 Email = user.Email,
                 CurrentRole = roles.FirstOrDefault() ?? "No Role"
             };
-
             userViewModels.Add(userViewModel);
         }
 
         return View(userViewModels);
     }
-
-
-
 
     [HttpPost]
     public async Task<IActionResult> ChangeRole(string userId, string newRole)
@@ -53,5 +50,22 @@ public class AdminController : Controller
 
         var result = await _adminService.ChangeUserRoleAsync(userId, newRole, currentUser.Id);
         return RedirectToAction("Users");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Orders()
+    {
+        var orders = await _orderService.GetAllOrdersAsync();
+        return View(orders);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderDetails(int id)
+    {
+        var order = await _orderService.GetOrderDetailsAsync(id);
+        if (order == null)
+            return NotFound();
+
+        return View(order);
     }
 }

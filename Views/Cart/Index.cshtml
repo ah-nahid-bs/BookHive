@@ -1,4 +1,4 @@
-@model List<BookHive.ViewModel.CartItemViewModel>
+@model List<BookHive.ViewModels.CartItemViewModel>
 @{
     ViewData["Title"] = "My Cart";
 }
@@ -45,8 +45,11 @@ else
     <div class="d-flex justify-content-between align-items-center">
         <h4>Total: @ViewBag.CartTotal.ToString("C")</h4>
 
-        <form asp-action="Clear" method="post">
-            <button class="btn btn-warning">Clear Cart</button>
-        </form>
+        <div>
+            <a asp-controller="Order" asp-action="Checkout" class="btn btn-success">Proceed to Checkout</a>
+            <form asp-action="Clear" method="post" class="d-inline">
+                <button class="btn btn-warning">Clear Cart</button>
+            </form>
+        </div>
     </div>
 }

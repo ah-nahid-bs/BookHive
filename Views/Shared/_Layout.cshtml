@@ -33,15 +33,12 @@
                     {
                         <a class="btn btn-outline-warning" href="/Product/Index">Product Management</a>
                         <a class="btn btn-outline-info" href="/Admin/Users">User Management</a>
-
+                        <a class="btn btn-outline-info" href="/Admin/Orders">Order Management</a>
                     }
                     else
                     {
-                        <a class="btn btn-outline-light position-relative" href="/Cart">
-                            Cart
-                            @* <vc:cart-count></vc:cart-count> *@
-                        </a>
-
+                        <a class="btn btn-outline-light position-relative" href="/Cart">Cart</a>
+                        <a class="btn btn-outline-light" href="/Order/History">Order History</a>
                     }
 
                     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
