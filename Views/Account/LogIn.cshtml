@@ -4,24 +4,113 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
-    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
-        <h2 class="text-center mb-4">Login</h2>
+<div class="d-flex justify-content-center align-items-center vh-100 login-container">
+    <div class="card shadow-lg p-4 login-card">
+        <h2 class="text-center mb-4 section-heading">Login</h2>
         <form method="post" asp-action="Login">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="UsernameOrEmail" name="UsernameOrEmail" placeholder="Email or Username" required />
+                <input type="text" class="form-control login-input" id="UsernameOrEmail" name="UsernameOrEmail" placeholder="Email or Username" required />
                 <label for="UsernameOrEmail">Email or Username</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="Password" name="Password" placeholder="Password" required />
+                <input type="password" class="form-control login-input" id="Password" name="Password" placeholder="Password" required />
                 <label for="Password">Password</label>
             </div>
             <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                <button type="submit" class="btn btn-login">Login</button>
             </div>
-            <div class="text-center">
+            <div class="text-center signup-link">
                 <small>Don't have an account? <a href="/Account/SignUp" class="text-decoration-none">Sign up</a></small>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Container */
+    .login-container {
+        background: linear-gradient(135deg, #f8f4ff, #ffffff); /* Light lavender gradient */
+    }
+
+    /* Login Card */
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background: #fff; /* White background */
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-radius: 1rem; /* Kept as specified */
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.2); /* Lavender shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 12px 32px rgba(155, 135, 245, 0.3); /* Deeper shadow */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* Form Inputs */
+    .login-input {
+        border: 1px solid #D8BFD8; /* Lavender border, matching _Layout.cshtml */
+        border-radius: 8px;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-input:focus {
+        border-color: #C71585; /* Darker lavender/pink on focus, matching _Layout.cshtml */
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+
+    /* Floating Label */
+    .form-floating > label {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Login Button */
+    .btn-login {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+
+    /* Sign Up Link */
+    .signup-link {
+        color: #6e59a5; /* Lavender text */
+        font-size: 0.875rem;
+    }
+
+    .signup-link a {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .signup-link a:hover {
+        color: #7e69ab; /* Lavender dark on hover */
+    }
+</style>

@@ -41,3 +41,97 @@
 
     <a asp-action="Orders" class="btn btn-secondary">Back to Orders</a>
 </div>
+
+<style>
+    /* Container Styling */
+    .container {
+        background-color: #fff; /* White background for contrast */
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        padding: 20px;
+    }
+
+    /* Headings */
+    h2, h4 {
+        color: #333; /* Dark text for readability */
+        font-weight: 600;
+        border-bottom: 2px solid #D8BFD8; /* Lavender accent underline */
+        padding-bottom: 10px;
+    }
+    h4 {
+        font-size: 1.25rem; /* Slightly smaller than h2 */
+        margin-top: 20px;
+    }
+
+    /* Card Styling */
+    .card {
+        background-color: #E6E6FA; /* Light lavender background */
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+    .card-body {
+        padding: 20px;
+        color: #333; /* Dark text */
+    }
+    .card-body p {
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+    .card-body strong {
+        color: #C71585; /* Darker lavender/pink for emphasis */
+        margin-right: 5px;
+    }
+
+    /* Table Styling */
+    .table {
+        background-color: #E6E6FA; /* Light lavender background */
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        margin: 20px 0;
+    }
+    .table thead {
+        background-color: #D8BFD8; /* Darker lavender for header */
+        color: #333; /* Dark text */
+    }
+    .table th, .table td {
+        padding: 15px; /* Spacious padding */
+        text-align: left;
+        border-bottom: 1px solid #ddd; /* Light border between rows */
+    }
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .table tbody tr {
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+    .table tbody tr:hover {
+        background-color: #f0e6fa; /* Slightly darker lavender on hover */
+    }
+    .table td {
+        color: #333; /* Dark text */
+    }
+    .table img {
+        border-radius: 5px; /* Rounded corners for images */
+        object-fit: cover; /* Ensure images fit nicely */
+    }
+
+    /* Button Styling */
+    .btn-secondary {
+        background-color: #ccc !important; /* Gray button for "Back to Orders" */
+        border-color: #ccc !important;
+        color: #333 !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #b3b3b3 !important; /* Darker gray on hover */
+        border-color: #b3b3b3 !important;
+    }
+</style>

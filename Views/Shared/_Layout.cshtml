@@ -1,78 +1,256 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using BookHive.Models
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BookHive</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <!-- Left: Brand -->
-            <a class="navbar-brand me-3" href="/">BookHive</a>
-
-            <!-- Center: Search -->
-            <form class="d-flex mx-auto w-50" role="search" method="get" action="/Books/Search">
-                <input class="form-control me-2" type="search" name="query" placeholder="Search books..." aria-label="Search">
-                <button class="btn btn-outline-light" type="submit">Search</button>
-            </form>
-
-            <!-- Right: Actions -->
-            <div class="d-flex align-items-center gap-2">
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    @* Admin Controls *@
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a class="btn btn-outline-warning" href="/Product/Index">Product Management</a>
-                        <a class="btn btn-outline-info" href="/Admin/Users">User Management</a>
-                        <a class="btn btn-outline-info" href="/Admin/Orders">Order Management</a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-outline-light position-relative" href="/Cart">Cart</a>
-                        <a class="btn btn-outline-light" href="/Order/History">Order History</a>
-                    }
-
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-outline-light">Logout</button>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">BookHive</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index") ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Product") ? "active" : "")" asp-controller="Product" asp-action="Index">Product Management</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Users") ? "active" : "")" asp-controller="Admin" asp-action="Users">User Management</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @((ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" && ViewContext.RouteData.Values["Action"]?.ToString() == "Orders") ? "active" : "")" asp-controller="Admin" asp-action="Orders">Order Management</a>
+                            </li>
+                        }
+                    </ul>
+                    <form class="d-flex me-3" asp-controller="Home" asp-action="Search" method="get">
+                        <input class="form-control me-2 search-input" type="search" name="query" placeholder="Search books..." aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
                     </form>
-                }
-                else
-                {
-                    <a class="btn btn-outline-light" href="/Account/Login">Login</a>
-                    <a class="btn btn-outline-light" href="/Account/SignUp">SignUp</a>
-                }
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart"></i> Cart
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Wishlist" asp-action="Index">
+                                    <i class="bi bi-heart"></i> Wishlist
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person"></i> @User.Identity.Name <i class="bi bi-chevron-down dropdown-icon"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Order" asp-action="UserOrders">User Orders</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item logout-item" asp-controller="Account" asp-action="Logout">Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-success" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-success ms-2" asp-controller="Account" asp-action="Logout">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container mt-4">
+    <main role="main" class="pb-3">
         @RenderBody()
-    </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
-    @RenderSection("Scripts", required: false)
-    <script>
-        function slideLeft(sliderId) {
-            const slider = document.getElementById(sliderId);
-            slider.scrollBy({ left: -250, behavior: 'smooth' });
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            © 2025 - BookHive - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <style>
+        /* Body and Main Content */
+        body {
+            background-color: #f8f9fa; /* Light gray background for the entire page */
+            color: #333; /* Dark text for readability */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        main {
+            min-height: calc(100vh - 200px); /* Ensure main content takes up remaining space */
         }
 
-        function slideRight(sliderId) {
-            const slider = document.getElementById(sliderId);
-            slider.scrollBy({ left: 250, behavior: 'smooth' });
+        /* Navbar Styling */
+        .navbar {
+            background-color: #fff; /* White background for navbar */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            padding: 15px 0;
         }
-    </script>
+        .navbar-brand {
+            color: #333 !important; /* Dark text for brand */
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        .navbar-brand:hover {
+            color: #C71585 !important; /* Darker lavender/pink on hover */
+        }
+        .nav-link {
+            color: #333 !important; /* Dark text for links */
+            position: relative;
+            padding: 10px 15px;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #C71585 !important; /* Darker lavender/pink on hover */
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            background: #D8BFD8; /* Lavender underline for active link */
+            bottom: 5px;
+            left: 15px;
+        }
+        .nav-link.btn {
+            margin: 0 5px; /* Spacing for button-like links */
+        }
+        .nav-link i {
+            margin-right: 5px; /* Space between icon and text */
+        }
+        .navbar-toggler {
+            border-color: #D8BFD8; /* Lavender border for toggler */
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(199, 21, 133, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
 
+        /* Dropdown Styling */
+        .dropdown-toggle {
+        color: #333 !important; /* Dark text for dropdown toggle */
+        position: relative;
+        padding: 10px 15px;
+        transition: color 0.3s ease;
+        }
+        .dropdown-toggle:hover {
+            color: #C71585 !important; /* Darker lavender/pink on hover */
+        }
+        .dropdown-icon {
+            margin-left: 5px; /* Space between username and icon */
+            color: #D8BFD8; /* Lavender icon */
+            transition: color 0.3s ease;
+        }
+        .dropdown-toggle:hover .dropdown-icon {
+            color: #C71585; /* Darker lavender/pink on hover */
+        }
+        /* Remove the default caret since we're using a custom icon */
+        .dropdown-toggle::after {
+            display: none; /* Hide the default Bootstrap caret */
+        }
+        .dropdown-menu {
+            background-color: #fff; /* White background */
+            border: 1px solid #D8BFD8; /* Lavender border */
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .dropdown-item {
+            color: #D8BFD8; /* Lavender text */
+            padding: 8px 15px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dropdown-item:hover {
+            background-color: #E6E6FA; /* Light lavender background on hover */
+            color: #C71585; /* Darker lavender/pink text on hover */
+        }
+        .dropdown-divider {
+            border-top: 1px solid #D8BFD8; /* Lavender divider */
+        }
+        .logout-item {
+            font-weight: 500; /* Slightly bold for emphasis */
+        }
+        /* Search Bar Styling */
+        .search-input {
+            border: 1px solid #D8BFD8; /* Lavender border */
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: #C71585; /* Darker lavender/pink on focus */
+            box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+            outline: none;
+        }
+        .btn-outline-success {
+            border-color: #D8BFD8; /* Lavender border */
+            color: #D8BFD8; /* Lavender icon */
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .btn-outline-success:hover {
+            background-color: #D8BFD8; /* Lavender background on hover */
+            color: #fff; /* White icon on hover */
+        }
+
+        /* Button Styling */
+        .btn-success {
+            background-color: #D8BFD8 !important; /* Lavender for "Login/Register" */
+            border-color: #D8BFD8 !important;
+            color: #fff !important;
+            border-radius: 5px;
+            padding: 6px 12px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-success:hover {
+            background-color: #C71585 !important; /* Darker lavender/pink on hover */
+            border-color: #C71585 !important;
+        }
+
+        /* Footer Styling */
+        .footer {
+            background-color: #fff; /* White background for footer */
+            border-top: 1px solid #D8BFD8; /* Lavender border */
+            padding: 20px 0;
+            color: #333; /* Dark text */
+        }
+        .footer a {
+            color: #D8BFD8; /* Lavender link */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #C71585; /* Darker lavender/pink on hover */
+        }
+    </style>
 </body>
 </html>

@@ -5,45 +5,202 @@
 }
 
 <div class="container py-4">
-    <h2 class="mb-4">Checkout</h2>
+    <h2 class="mb-4 section-heading">Checkout</h2>
 
     @if (!Model.CartItems.Any())
     {
-        <div class="alert alert-info">Your cart is empty.</div>
+        <div class="alert alert-info no-cart-items">Your cart is empty.</div>
     }
     else
     {
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Book</th>
-                    <th>Image</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.CartItems)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered checkout-table">
+                <thead class="table-header">
                     <tr>
-                        <td>@item.Title</td>
-                        <td><img src="@item.ImageUrl" alt="Image" width="60" /></td>
-                        <td>@item.Price.ToString("C")</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.Total.ToString("C")</td>
+                        <th>Book</th>
+                        <th>Image</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4>Total: @Model.TotalAmount.ToString("C")</h4>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <tr class="cart-item">
+                            <td class="book-title">@item.Title</td>
+                            <td><img src="@item.ImageUrl" alt="@item.Title" class="cart-image" /></td>
+                            <td class="price">@item.Price.ToString("C")</td>
+                            <td class="quantity">@item.Quantity</td>
+                            <td class="total">@item.Total.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
-        <form asp-action="PlaceOrder" method="post">
-            <button type="submit" class="btn btn-success">Place Order</button>
-            <a asp-controller="Cart" asp-action="Index" class="btn btn-secondary">Back to Cart</a>
+        <div class="d-flex justify-content-between align-items-center mb-4 checkout-footer">
+            <h4 class="checkout-total">Total: @Model.TotalAmount.ToString("C")</h4>
+        </div>
+
+        <form asp-action="PlaceOrder" method="post" class="checkout-actions">
+            <button type="submit" class="btn btn-place-order">Place Order</button>
+            <a asp-controller="Cart" asp-action="Index" class="btn btn-back-to-cart">Back to Cart</a>
         </form>
     }
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* No Cart Items Alert */
+    .no-cart-items {
+        background: #f8f4ff; /* Light lavender background */
+        border: 1px solid #9b87f5; /* Lavender border */
+        color: #6e59a5; /* Lavender text */
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Container */
+    .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+    }
+
+    /* Checkout Table */
+    .checkout-table {
+        background: #fff; /* White background for table */
+        border: none; /* Remove default border */
+        margin-bottom: 0; /* Remove default margin */
+    }
+
+    /* Table Header */
+    .table-header {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
+        border-bottom: 2px solid #9b87f5; /* Lavender border */
+    }
+
+    .table-header th {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Rows */
+    .cart-item {
+        background: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .cart-item:hover {
+        background: #f8f4ff; /* Light lavender on hover */
+    }
+
+    .cart-item td {
+        vertical-align: middle;
+        padding: 1rem;
+        text-align: center;
+        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Book Title */
+    .book-title {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    /* Cart Image */
+    .cart-image {
+        width: 60px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Price and Total */
+    .price,
+    .total {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Quantity */
+    .quantity {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Checkout Footer */
+    .checkout-footer {
+        padding: 1rem;
+        background: #f8f4ff; /* Light lavender background */
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
+    }
+
+    /* Checkout Total */
+    .checkout-total {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+
+    /* Checkout Actions */
+    .checkout-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Place Order Button */
+    .btn-place-order {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-place-order:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+
+    /* Back to Cart Button */
+    .btn-back-to-cart {
+        background: #6e59a5; /* Lavender secondary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back-to-cart:hover {
+        background: #5a4a87; /* Darker lavender for hover */
+    }
+</style>

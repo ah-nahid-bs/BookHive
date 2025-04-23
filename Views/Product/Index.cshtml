@@ -33,10 +33,99 @@
                 <td>@(book.IsDiscounted ? "Yes" : "No")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-sm btn-primary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
         }
         </tbody>
     </table>
 </div>
+
+<style>
+    /* Container Styling */
+    .container {
+        background-color: #fff; /* White background for contrast */
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        padding: 20px;
+    }
+
+    /* Heading */
+    h2 {
+        color: #333; /* Dark text for readability */
+        font-weight: 600;
+        border-bottom: 2px solid #D8BFD8; /* Lavender accent underline */
+        padding-bottom: 10px;
+    }
+
+    /* Table Styling */
+    .table {
+        background-color: #E6E6FA; /* Light lavender background */
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        margin: 20px 0;
+    }
+    .table thead {
+        background-color: #D8BFD8; /* Darker lavender for header */
+        color: #333; /* Dark text */
+    }
+    .table th, .table td {
+        padding: 15px; /* Spacious padding */
+        text-align: left;
+        border-bottom: 1px solid #ddd; /* Light border between rows */
+    }
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .table tbody tr {
+        transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+    .table tbody tr:hover {
+        background-color: #f0e6fa; /* Slightly darker lavender on hover */
+    }
+    .table td {
+        color: #333; /* Dark text */
+    }
+
+    /* Button Styling */
+    .btn-success {
+        background-color: #D8BFD8 !important; /* Lavender for "Add New Product" */
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-success:hover {
+        background-color: #C71585 !important; /* Darker lavender/pink on hover */
+        border-color: #C71585 !important;
+    }
+    .btn-primary {
+        background-color: #D8BFD8 !important; /* Lavender for "Edit" */
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #C71585 !important; /* Darker lavender/pink on hover */
+        border-color: #C71585 !important;
+    }
+    .btn-danger {
+        background-color: #ff6b6b !important; /* Soft red for "Delete" */
+        border-color: #ff6b6b !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-danger:hover {
+        background-color: #e65b5b !important; /* Darker red on hover */
+        border-color: #e65b5b !important;
+    }
+</style>

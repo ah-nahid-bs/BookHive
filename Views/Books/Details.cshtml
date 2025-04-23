@@ -7,23 +7,128 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-md-5">
-            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Title" />
+            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm book-image" alt="@Model.Title" />
         </div>
-        <div class="col-md-7">
-            <h2>@Model.Title</h2>
-            <p class="text-muted">by @Model.Author</p>
-            <p><strong>Category:</strong> @Model.CategoryName</p>
-            <p><strong>Published:</strong> @Model.PublishDate.ToString("yyyy-MM-dd")</p>
-            <p>demo description</p>
-            <h4 class="text-success">₹@Model.Price</h4>
+        <div class="col-md-7 book-details">
+            <h2 class="book-title">@Model.Title</h2>
+            <p class="author-name">by @Model.Author</p>
+            <p><strong>Category:</strong> <span class="category-name">@Model.CategoryName</span></p>
+            <p><strong>Published:</strong> <span class="publish-date">@Model.PublishDate.ToString("yyyy-MM-dd")</span></p>
+            <p class="description">demo description</p>
+            <h4 class="current-price">₹@Model.Price</h4>
 
             <div class="mt-4 d-flex align-items-center gap-3">
                 <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex align-items-center gap-2">
                     <input type="hidden" name="bookId" value="@Model.Id" />
-                    <input type="number" name="quantity" value="1" min="1" class="form-control w-auto" />
-                    <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+                    <input type="number" name="quantity" value="1" min="1" class="form-control quantity-input" />
+                    <button type="submit" class="btn btn-add-to-cart">Add to Cart</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Book Image */
+    .book-image {
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-image:hover {
+        transform: scale(1.02); /* Slight zoom on hover */
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Lavender shadow */
+    }
+
+    /* Book Details Container */
+    .book-details {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching book cards */
+        border: 1px solid rgba(155, 135, 245, 0.2);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .book-details:hover {
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Deeper shadow on hover */
+    }
+
+    /* Book Title */
+    .book-title {
+        font-size: 1.75rem; /* Slightly larger than h2 default */
+        font-weight: 600;
+        color: #3c2f5f; /* Dark purple, matching Index.cshtml */
+        margin-bottom: 0.75rem;
+    }
+
+    /* Author Name */
+    .author-name {
+        font-size: 1rem;
+        color: #6e59a5; /* Lavender text, matching Index.cshtml */
+        margin-bottom: 0.75rem;
+    }
+
+    /* Category and Publish Date */
+    .category-name,
+    .publish-date {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Description */
+    .description {
+        color: #3c2f5f; /* Dark purple for readability */
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    /* Price */
+    .current-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #9b87f5; /* Lavender primary, matching Index.cshtml */
+        margin-bottom: 1rem;
+    }
+
+    /* Quantity Input */
+    .quantity-input {
+        border: 1px solid #D8BFD8; /* Lavender border, matching _Layout.cshtml */
+        border-radius: 8px;
+        background-color: #fff;
+        color: #333;
+        width: 80px; /* Fixed width for consistency */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .quantity-input:focus {
+        border-color: #C71585; /* Darker lavender/pink on focus, matching _Layout.cshtml */
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+
+    /* Add to Cart Button */
+    .btn-add-to-cart {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+    .btn-add-to-cart:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+        color: white;
+    }
+</style>
