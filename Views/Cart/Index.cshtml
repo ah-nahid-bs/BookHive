@@ -3,53 +3,224 @@
     ViewData["Title"] = "My Cart";
 }
 
-<h2 class="mb-4">My Cart</h2>
+<div class="container py-4">
+    <h2 class="mb-4 section-heading">My Cart</h2>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">Your cart is empty.</div>
-}
-else
-{
-    <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Book</th>
-                <th>Image</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Title</td>
-                    <td><img src="@item.ImageUrl" alt="Image" width="60" /></td>
-                    <td>@item.Price.ToString("C")</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Total.ToString("C")</td>
-                    <td>
-                        <form asp-action="Remove" method="post" class="d-inline">
-                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div class="d-flex justify-content-between align-items-center">
-        <h4>Total: @ViewBag.CartTotal.ToString("C")</h4>
-
-        <div>
-            <a asp-controller="Order" asp-action="Checkout" class="btn btn-success">Proceed to Checkout</a>
-            <form asp-action="Clear" method="post" class="d-inline">
-                <button class="btn btn-warning">Clear Cart</button>
-            </form>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info no-cart-items">Your cart is empty.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered cart-table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Book</th>
+                        <th>Image</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="cart-item">
+                            <td class="book-title">@item.Title</td>
+                            <td><img src="@item.ImageUrl" alt="@item.Title" class="cart-image" /></td>
+                            <td class="price">@item.Price.ToString("C")</td>
+                            <td class="quantity">@item.Quantity</td>
+                            <td class="total">@item.Total.ToString("C")</td>
+                            <td>
+                                <form asp-action="Remove" method="post" class="d-inline">
+                                    <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                    <button type="submit" class="btn btn-remove">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-    </div>
-}
+
+        <div class="d-flex justify-content-between align-items-center cart-footer">
+            <h4 class="cart-total">Total: @ViewBag.CartTotal.ToString("C")</h4>
+
+            <div class="cart-actions">
+                <a asp-controller="Order" asp-action="Checkout" class="btn btn-checkout">Proceed to Checkout</a>
+                <form asp-action="Clear" method="post" class="d-inline">
+                    <button class="btn btn-clear">Clear Cart</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* No Cart Items Alert */
+    .no-cart-items {
+        background: #f8f4ff; /* Light lavender background */
+        border: 1px solid #9b87f5; /* Lavender border */
+        color: #6e59a5; /* Lavender text */
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Container */
+    .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+    }
+
+    /* Cart Table */
+    .cart-table {
+        background: #fff; /* White background for table */
+        border: none; /* Remove default border */
+        margin-bottom: 0; /* Remove default margin */
+    }
+
+    /* Table Header */
+    .table-header {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); 
+    }
+
+    .table-header th {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+        
+    }
+
+    /* Table Rows */
+    .cart-item {
+        background: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .cart-item:hover {
+        background: #f8f4ff; /* Light lavender on hover */
+    }
+
+    .cart-item td {
+        vertical-align: middle;
+        padding: 1rem;
+        text-align: center;
+        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Book Title */
+    .book-title {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    /* Cart Image */
+    .cart-image {
+        width: 60px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Price and Total */
+    .price,
+    .total {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Quantity */
+    .quantity {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Remove Button */
+    .btn-remove {
+        background: #ff6b6b; /* Red for remove, but styled to fit theme */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+        background: #e55a5a; /* Darker red on hover */
+    }
+
+    /* Cart Footer */
+    .cart-footer {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: #f8f4ff; /* Light lavender background */
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
+    }
+
+    /* Cart Total */
+    .cart-total {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+
+    /* Checkout Button */
+    .btn-checkout {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        margin-right: 1rem;
+    }
+
+    .btn-checkout:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+
+    /* Clear Cart Button */
+    .btn-clear {
+        background: #f1c40f; /* Yellow for clear, but styled to fit theme */
+        color: #3c2f5f; /* Dark purple text */
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-clear:hover {
+        background: #d4ac0d; /* Darker yellow on hover */
+    }
+</style>

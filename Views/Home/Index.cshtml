@@ -7,138 +7,341 @@
     var bestSellers = ViewBag.BestSellers;
     var newArrivals = ViewBag.NewArrivals;
 }
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%);
+        --lavender-light: hsl(270, 30%, 90%);
+        --lavender-dark: hsl(270, 40%, 40%);
+    }
+
+    .book-card {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff);
+        border: 1px solid rgba(155, 135, 245, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 220px;
+        flex-shrink: 0;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3);
+    }
+
+    .book-image {
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid rgba(155, 135, 245, 0.1);
+    }
+
+    .book-card-body {
+        padding: 1rem;
+    }
+
+    .book-title {
+        font-size: 1rem; /* Matches h6 size */
+        font-weight: 600;
+        color: #3c2f5f;
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .author-name {
+        font-size: 0.8rem; /* Small text */
+        color: #6e59a5; /* Lavender text instead of muted */
+        margin-bottom: 0.5rem;
+    }
+
+    .current-price {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #9b87f5; /* Lavender instead of success green */
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-details {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        width: 100%; /* Full-width as per the snippet */
+        font-size: 0.875rem; /* Matches btn-sm */
+    }
+
+    .btn-details:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+        color: white;
+    }
+
+    .nav-section {
+        margin-bottom: 2rem;
+    }
+
+    .nav-section .dropdown-menu {
+        background: #f8f4ff;
+        border: 1px solid rgba(155, 135, 245, 0.2);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.2);
+    }
+
+    .nav-section .dropdown-item {
+        color: #6e59a5;
+        transition: all 0.3s ease;
+    }
+
+    .nav-section .dropdown-item:hover {
+        background: #9b87f5;
+        color: white;
+    }
+
+    .nav-section .btn-dropdown {
+        background: white;
+        color: #6e59a5;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+
+    .nav-section .btn-dropdown:hover {
+        background: #9b87f5;
+        color: white;
+        border-color: #9b87f5;
+    }
+
+    /* Add styles for the dropdown icon */
+    .btn-dropdown.dropdown-toggle::after {
+        display: none; /* Hide the default Bootstrap caret */
+    }
+
+    .dropdown-icon {
+        margin-left: 5px; /* Space between text and icon */
+        color: #6e59a5; /* Match the button text color */
+        transition: color 0.3s ease;
+    }
+
+    .btn-dropdown:hover .dropdown-icon {
+        color: white; /* Match the button text color on hover */
+    }
+
+    .nav-section .section-link {
+        color: #6e59a5;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .nav-section .section-link:hover {
+        background: #9b87f5;
+        color: white;
+    }
+
+    .section-heading {
+        color: #3c2f5f;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+</style>
 
 <div class="container mt-4">
-    <!-- Category Navigation -->
-    <div class="d-flex flex-wrap justify-content-center mb-4">
-        @if (categories != null)
-        {
-            foreach (var category in categories)
-            {
-                <a class="btn btn-outline-primary m-2" asp-controller="Books" asp-action="Category" asp-route-categoryName="@category">@category</a>
-
-            }
-        }
+    <div class="nav-section d-flex flex-wrap align-items-center">
+        <div class="dropdown">
+            <button class="btn btn-dropdown dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Category <i class="bi bi-chevron-down dropdown-icon"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                @foreach (var category in categories)
+                {
+                    <li><a class="dropdown-item" asp-controller="Books" asp-action="Category" asp-route-categoryName="@category">@category</a></li>
+                }
+            </ul>
+        </div>
+        <a href="#featured" class="section-link">Featured Items</a>
+        <a href="#new-arrivals" class="section-link">New Arrivals</a>
+        <div class="dropdown">
+            <button class="btn btn-dropdown dropdown-toggle" type="button" id="bestSellerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Best Sellers <i class="bi bi-chevron-down dropdown-icon"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="bestSellerDropdown">
+                <li><a class="dropdown-item section-link" href="#this-month">This Month</a></li>
+                <li><a class="dropdown-item section-link" href="#all-time">All Time</a></li>
+            </ul>
+        </div>
     </div>
-
-    <!-- Featured Items -->
-    <section class="mb-5">
-        <h2 class="mb-3">📚 Featured Items</h2>
-        <div class="row">
-            @if (featuredItems != null)
-            {
-                foreach (var book in featuredItems)
-                {
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 250px; object-fit: cover;" />
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text mb-1 text-muted">by @book.Author</p>
-                                <p class="card-text fw-bold text-success">₹@book.Price</p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-primary mt-auto">View Details</a>
-                            </div>
-                        </div>
-                    </div>
-
-                }
-            }
-        </div>
-    </section>
-
     <!-- Discounted Products -->
-    <section class="mb-5">
-        <h2 class="mb-3 text-danger">🔥 Discounted Books</h2>
-        <div class="row">
-            @if (discountedBooks!= null)
-            {
-                foreach (var book in discountedBooks)
-                {
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100">
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 250px; object-fit: cover;" />
-                            <div class="card-body">
-                                <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text">@book.Author</p>
-                                <p class="card-text">
-                                    <span class="text-muted text-decoration-line-through me-2">$@book.OriginalPrice</span>
-                                    <span class="fw-bold text-success">$@book.DiscountedPrice</span>
-                                </p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">View Details</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
+    <section class="mb-5 position-relative">
+        <div class="d-flex align-items-center justify-content-center position-relative">
+            <img src="/images/hot-deals-banner.jpg" 
+                style="width: 100%; height: 60%; object-fit: cover;"  
+                class="img-fluid rounded shadow" 
+                alt="Hot Deals Banner" />
+
+            <!-- Overlay Button -->
+            <a href="/Deals" class="btn btn-danger position-absolute" 
+            style="bottom: 0%; right: 0%; transform: translate(-50%, -50%); padding: 10px 20px;">
+                View Deals
+            </a>
         </div>
     </section>
 
-    <!-- Trending Books This Month -->
-    <section class="mb-5">
-        <h2 class="mb-3">📈 Trending This Month</h2>
-        <div class="row">
-            @if (trendingBooks != null)
-            {
-                foreach (var book in trendingBooks)
-                {
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100">
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 250px; object-fit: cover;" />
-                            <div class="card-body">
-                                <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text">@book.Author</p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-info">Check it out</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-    </section>
 
-    <!-- Best Seller Books -->
-    <section class="mb-5">
-        <h2 class="mb-3">🏆 Best Sellers</h2>
-        <div class="row">
-            @if (bestSellers != null)
-            {
-                foreach (var book in bestSellers)
-                {
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100 border-success">
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 250px; object-fit: cover;" />
-                            <div class="card-body">
-                                <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text">@book.Author</p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-success">Top Pick</a>
+ 
+    <!-- Featured Items -->
+    <section id="featured" class="mb-5">
+        <h2 class="section-heading">Featured Items</h2>
+        <div class="d-flex align-items-center justify-content-center px-4 py-3">
+            <div class="position-relative w-100">
+                <!-- Left Arrow -->
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y z-3" onclick="slideFeaturedLeft()" style="z-index: 1;">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <!-- Book Slider -->
+                <div id="featuredSlider" class="d-flex gap-3 px-5 hide-scrollbar" style="overflow-x: auto; scroll-behavior: smooth;">
+                    @if (featuredItems != null)
+                    {
+                        foreach (var book in featuredItems)
+                        {
+                            <div class="book-card shadow-sm">
+                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 pt-5 ps-5 pe-5" />
+                                <div class="book-card-body d-flex flex-column">
+                                    <h6 class="book-title">@book.Title</h6>
+                                    @* <p class="author-name">by @authorName</p> *@
+                                    <p class="current-price">৳@book.Price</p>
+                                    <a href="/Books/Details/@book.Id" class="btn btn-sm ButtonText mt-auto">View</a>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                }
-            }
+                        }
+                    }
+                </div>
+
+                <!-- Right Arrow -->
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y z-3" onclick="slideFeaturedRight()" style="z-index: 1;">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </section>
 
     <!-- New Arrivals -->
-    <section class="mb-5">
-        <h2 class="mb-3">🆕 New Arrivals</h2>
-        <div class="row">
-            @if (newArrivals != null)
-            {
-                foreach (var book in newArrivals)
-                {
-                    <div class="col-md-3 mb-4">
-                        <div class="card h-100">
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height: 250px; object-fit: cover;" />
-                            <div class="card-body">
-                                <h5 class="card-title">@book.Title</h5>
-                                <p class="card-text">@book.Author</p>
-                                <a href="/Books/Details/@book.Id" class="btn btn-sm btn-primary">Explore</a>
+    <section id="new-arrivals" class="mb-5">
+        <h2 class="section-heading">New Arrivals</h2>
+        <div class="d-flex align-items-center justify-content-center px-4 py-3">
+            <div class="position-relative w-100">
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y z-3" onclick="slideLeft('newArrivalsSlider')">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div id="newArrivalsSlider" class="d-flex gap-3 px-5 hide-scrollbar" style="overflow-x: auto; scroll-behavior: smooth;">
+                    @if (newArrivals != null)
+                    {
+                        foreach (var book in newArrivals)
+                        {
+                            <div class="book-card shadow-sm p-4">
+                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 " />
+                                <div class="book-card-body d-flex flex-column">
+                                    <h6 class="book-title">@book.Title</h6>
+                                    @* <p class="author-name">by @authorName</p> *@
+                                    <p class="current-price">৳@book.Price</p>
+                                    <a href="/Books/Details/@book.Id" class="btn btn-sm ButtonText mt-auto">View</a>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                }
-            }
+                        }
+                    }
+                </div>
+
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y z-3" onclick="slideRight('newArrivalsSlider')">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </section>
+
+    <!-- Trending This Month -->
+    <section id="this-month" class="mb-5">
+        <h2 class="section-heading">Trending This Month</h2>
+        <div class="d-flex align-items-center justify-content-center px-4 py-3">
+            <div class="position-relative w-100">
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y z-3" onclick="slideLeft('trendingSlider')">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div id="trendingSlider" class="d-flex gap-3 px-5 hide-scrollbar" style="overflow-x: auto; scroll-behavior: smooth;">
+                    @if (bestSellers != null)
+                    {
+                        foreach (var book in bestSellers)
+                        {
+                            <div class="book-card shadow-sm p-4">
+                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 " />
+                                <div class="book-card-body d-flex flex-column">
+                                    <h6 class="book-title">@book.Title</h6>
+                                    @* <p class="author-name">by @authorName</p> *@
+                                    <p class="current-price">৳@book.Price</p>
+                                    <a href="/Books/Details/@book.Id" class="btn btn-sm ButtonText mt-auto">View</a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y z-3" onclick="slideRight('trendingSlider')">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="best-sellers" class="mb-5">
+        <h2 class="section-heading">Best Sellers</h2>
+        <div class="d-flex align-items-center justify-content-center px-4 py-3">
+            <div class="position-relative w-100">
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y z-3" onclick="slideLeft('bestSellerSlider')">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <div id="bestSellerSlider" class="d-flex gap-3 px-5 hide-scrollbar" style="overflow-x: auto; scroll-behavior: smooth;">
+                    @if (bestSellers != null)
+                    {
+                        foreach (var book in bestSellers)
+                        {
+                            <div class="book-card shadow-sm p-4">
+                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 " />
+                                <div class="book-card-body d-flex flex-column">
+                                    <h6 class="book-title">@book.Title</h6>
+                                    @* <p class="author-name">by @authorName</p> *@
+                                    <p class="current-price">৳@book.Price</p>
+                                    <a href="/Books/Details/@book.Id" class="btn btn-sm ButtonText mt-auto">View</a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y z-3" onclick="slideRight('bestSellerSlider')">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+    
 </div>

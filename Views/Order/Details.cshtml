@@ -5,39 +5,190 @@
 }
 
 <div class="container py-4">
-    <h2 class="mb-4">Order #@Model.Id Details</h2>
+    <h2 class="mb-4 section-heading">Order #@Model.Id Details</h2>
 
-    <div class="card mb-4">
+    <div class="card mb-4 order-summary-card">
         <div class="card-body">
-            <p><strong>Order Date:</strong> @Model.OrderDate.ToString("yyyy-MM-dd")</p>
-            <p><strong>Total Amount:</strong> @Model.TotalAmount.ToString("C")</p>
+            <p class="order-detail"><strong>Order Date:</strong> <span class="order-date">@Model.OrderDate.ToString("yyyy-MM-dd")</span></p>
+            <p class="order-detail"><strong>Total Amount:</strong> <span class="total-amount">@Model.TotalAmount.ToString("C")</span></p>
         </div>
     </div>
 
-    <h4>Items</h4>
-    <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Book</th>
-                <th>Image</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Items)
-            {
+    <h4 class="items-heading">Items</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered order-table">
+            <thead class="table-header">
                 <tr>
-                    <td>@item.Title</td>
-                    <td><img src="@item.ImageUrl" alt="Image" width="60" /></td>
-                    <td>@item.Price.ToString("C")</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Total.ToString("C")</td>
+                    <th>Book</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr class="order-item">
+                        <td class="book-title">@item.Title</td>
+                        <td><img src="@item.ImageUrl" alt="@item.Title" class="order-image" /></td>
+                        <td class="price">@item.Price.ToString("C")</td>
+                        <td class="quantity">@item.Quantity</td>
+                        <td class="total">@item.Total.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
-    <a asp-action="History" class="btn btn-secondary">Back to History</a>
+    <a asp-action="History" class="btn btn-back-to-history">Back to History</a>
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* Order Summary Card */
+    .order-summary-card {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+        transition: box-shadow 0.3s ease;
+    }
+
+    .order-summary-card:hover {
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Deeper shadow on hover */
+    }
+
+    .order-summary-card .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Order Details */
+    .order-detail {
+        color: #3c2f5f; /* Dark purple */
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-date,
+    .total-amount {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    .total-amount {
+        color: #9b87f5; /* Lavender primary for emphasis */
+        font-weight: 600;
+    }
+
+    /* Items Heading */
+    .items-heading {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Table Container */
+    .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+    }
+
+    /* Order Table */
+    .order-table {
+        background: #fff; /* White background for table */
+        border: none; /* Remove default border */
+        margin-bottom: 0; /* Remove default margin */
+    }
+
+    /* Table Header */
+    .table-header {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
+        border-bottom: 2px solid #9b87f5; /* Lavender border */
+    }
+
+    .table-header th {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Rows */
+    .order-item {
+        background: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .order-item:hover {
+        background: #f8f4ff; /* Light lavender on hover */
+    }
+
+    .order-item td {
+        vertical-align: middle;
+        padding: 1rem;
+        text-align: center;
+        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Book Title */
+    .book-title {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    /* Order Image */
+    .order-image {
+        width: 60px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Price and Total */
+    .price,
+    .total {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Quantity */
+    .quantity {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Back to History Button */
+    .btn-back-to-history {
+        background: #6e59a5; /* Lavender secondary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back-to-history:hover {
+        background: #5a4a87; /* Darker lavender for hover */
+    }
+</style>

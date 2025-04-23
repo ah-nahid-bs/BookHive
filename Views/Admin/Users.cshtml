@@ -1,4 +1,11 @@
 @model List<BookHive.ViewModels.UserViewModel>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserId = currentUser?.Id;
+}
 
 <table class="table">
     <thead>
@@ -17,17 +24,217 @@
                 <td>@user.Email</td>
                 <td>@user.CurrentRole</td>
                 <td>
-                    <form asp-action="ChangeRole" method="post">
+                    <form asp-action="ChangeRole" method="post" class="role-change-form">
                         <input type="hidden" name="userId" value="@user.Id" />
                         <select name="newRole" class="form-control">
                             <option value="Admin">Admin</option>
                             <option value="Customer">Customer</option>
                             <option value="DeliveryBoy">DeliveryBoy</option>
                         </select>
-                        <button type="submit" class="btn btn-primary mt-1">Change</button>
+                        <button type="button" class="btn btn-primary mt-1 change-role-btn" 
+                                data-current-role="@user.CurrentRole" 
+                                data-user-id="@user.Id">Change</button>
                     </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Popup Modal for Role Change Confirmation -->
+<div class="modal fade" id="confirmRoleChangeModal" tabindex="-1" aria-labelledby="confirmRoleChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmRoleChangeModalLabel">Confirm Role Change</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to change the user role from <span id="currentRole"></span> to <span id="newRole"></span>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmRoleChange">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Popup Modal for Invalid Role Change (Self) -->
+<div class="modal fade" id="invalidRoleChangeModal" tabindex="-1" aria-labelledby="invalidRoleChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invalidRoleChangeModalLabel">Invalid Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You cannot change your own role.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Table Styles (Unchanged) */
+    .table {
+        background-color: #E6E6FA;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+    }
+    .table thead {
+        background-color: #D8BFD8;
+        color: #333;
+    }
+    .table th, .table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .table tbody tr {
+        transition: background-color 0.3s ease;
+    }
+    .table tbody tr:hover {
+        background-color: #f0e6fa;
+    }
+    .table td {
+        color: #333;
+    }
+    .form-control {
+        border: 1px solid #D8BFD8;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #C71585;
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+    .btn-primary {
+        background-color: #D8BFD8 !important;
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #C71585 !important;
+        border-color: #C71585 !important;
+    }
+
+    /* Popup Modal Styling (Both Modals) */
+    .modal-content {
+        background-color: #E6E6FA;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .modal-header {
+        background-color: #D8BFD8;
+        border-bottom: 1px solid #C71585;
+        color: #333;
+        padding: 15px 20px;
+    }
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+    .btn-close {
+        filter: brightness(0.5);
+    }
+    .modal-body {
+        color: #333;
+        padding: 20px;
+        font-size: 1rem;
+    }
+    .modal-body span {
+        font-weight: bold;
+        color: #C71585;
+    }
+    .modal-footer {
+        border-top: 1px solid #C71585;
+        padding: 15px 20px;
+        background-color: #E6E6FA;
+    }
+    .modal-footer .btn-secondary {
+        background-color: #ccc !important;
+        border-color: #ccc !important;
+        color: #333 !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease;
+    }
+    .modal-footer .btn-secondary:hover {
+        background-color: #b3b3b3 !important;
+        border-color: #b3b3b3 !important;
+    }
+    .modal-footer .btn-primary {
+        background-color: #D8BFD8 !important;
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .modal-footer .btn-primary:hover {
+        background-color: #C71585 !important;
+        border-color: #C71585 !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        const currentUserId = '@currentUserId'; // Current user's ID from the server
+
+        document.querySelectorAll('.change-role-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+                const currentRole = this.getAttribute('data-current-role');
+                const newRole = form.querySelector('select[name="newRole"]').value;
+                const userId = this.getAttribute('data-user-id');
+
+                // Check if the user is trying to change their own role
+                if (userId === currentUserId) {
+                    const modal = new bootstrap.Modal(document.getElementById('invalidRoleChangeModal'));
+                    modal.show();
+                    return;
+                }
+
+                // Prevent submission if the role isn't changing
+                if (currentRole === newRole) {
+                    alert('The selected role is the same as the current role.');
+                    return;
+                }
+
+                // Populate the confirmation modal with the roles
+                document.getElementById('currentRole').textContent = currentRole;
+                document.getElementById('newRole').textContent = newRole;
+
+                // Show the confirmation modal
+                const modal = new bootstrap.Modal(document.getElementById('confirmRoleChangeModal'));
+                modal.show();
+
+                // Handle the "Yes" button in the confirmation modal
+                document.getElementById('confirmRoleChange').onclick = () => {
+                    form.submit();
+                };
+            });
+        });
+    </script>
+}

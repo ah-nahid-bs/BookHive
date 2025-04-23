@@ -5,36 +5,146 @@
 }
 
 <div class="container py-4">
-    <h2 class="mb-4">Order History</h2>
+    <h2 class="mb-4 section-heading">Order History</h2>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">You have no orders yet.</div>
+        <div class="alert alert-info no-orders-alert">You have no orders yet.</div>
     }
     else
     {
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model)
-                {
+        <div class="table-responsive">
+            <table class="table table-bordered order-history-table">
+                <thead class="table-header">
                     <tr>
-                        <td>@order.Id</td>
-                        <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
-                        <td>@order.TotalAmount.ToString("C")</td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-primary">Details</a>
-                        </td>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr class="order-row">
+                            <td class="order-id">@order.Id</td>
+                            <td class="order-date">@order.OrderDate.ToString("yyyy-MM-dd")</td>
+                            <td class="total-amount">@order.TotalAmount.ToString("C")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-details">Details</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* No Orders Alert */
+    .no-orders-alert {
+        background: #f8f4ff; /* Light lavender background */
+        border: 1px solid #9b87f5; /* Lavender border */
+        color: #6e59a5; /* Lavender text */
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Container */
+    .table-responsive {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+    }
+
+    /* Order History Table */
+    .order-history-table {
+        background: #fff; /* White background for table */
+        border: none; /* Remove default border */
+        margin-bottom: 0; /* Remove default margin */
+    }
+
+    /* Table Header */
+    .table-header {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
+        border-bottom: 2px solid #9b87f5; /* Lavender border */
+    }
+
+    .table-header th {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Table Rows */
+    .order-row {
+        background: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .order-row:hover {
+        background: #f8f4ff; /* Light lavender on hover */
+    }
+
+    .order-row td {
+        vertical-align: middle;
+        padding: 1rem;
+        text-align: center;
+        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+    }
+
+    /* Order ID */
+    .order-id {
+        color: #3c2f5f; /* Dark purple */
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    /* Order Date */
+    .order-date {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    /* Total Amount */
+    .total-amount {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Details Button */
+    .btn-details {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-details:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+</style>

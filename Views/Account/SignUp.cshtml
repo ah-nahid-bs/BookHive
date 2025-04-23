@@ -3,35 +3,35 @@
     ViewData["Title"] = "Sign Up";
 }
 
-<div class="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
-    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
-        <h2 class="text-center mb-4">Create Account</h2>
+<div class="d-flex justify-content-center align-items-center vh-100 signup-container">
+    <div class="card shadow-lg p-4 signup-card">
+        <h2 class="text-center mb-4 section-heading">Create Account</h2>
         <form method="post" asp-action="SignUp">
             <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" placeholder="Full Name" />
+                <input asp-for="Name" class="form-control signup-input" placeholder="Full Name" />
                 <label asp-for="Name">Full Name</label>
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <span asp-validation-for="Name" class="text-danger validation-error"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" placeholder="Email" />
+                <input asp-for="Email" class="form-control signup-input" placeholder="Email" />
                 <label asp-for="Email">Email address</label>
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <span asp-validation-for="Email" class="text-danger validation-error"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" placeholder="Password" />
+                <input asp-for="Password" class="form-control signup-input" placeholder="Password" />
                 <label asp-for="Password">Password</label>
-                <span asp-validation-for="Password" class="text-danger"></span>
+                <span asp-validation-for="Password" class="text-danger validation-error"></span>
             </div>
             <div class="form-floating mb-4">
-                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                <input asp-for="ConfirmPassword" class="form-control signup-input" placeholder="Confirm Password" />
                 <label asp-for="ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                <span asp-validation-for="ConfirmPassword" class="text-danger validation-error"></span>
             </div>
             <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-success btn-lg">Sign Up</button>
+                <button type="submit" class="btn btn-signup">Sign Up</button>
             </div>
-            <div class="text-center">
-                <small>Already have an account? <a href="/Account/Login" class="text-decoration-none">LogIn</a></small>
+            <div class="text-center login-link">
+                <small>Already have an account? <a href="/Account/Login" class="text-decoration-none">Log In</a></small>
             </div>
         </form>
     </div>
@@ -40,3 +40,99 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Container */
+    .signup-container {
+        background: linear-gradient(135deg, #f8f4ff, #ffffff); /* Light lavender gradient */
+    }
+
+    /* Sign Up Card */
+    .signup-card {
+        width: 100%;
+        max-width: 400px;
+        background: #fff; /* White background */
+        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-radius: 1rem; /* Kept as specified */
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.2); /* Lavender shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .signup-card:hover {
+        transform: translateY(-5px); /* Slight lift on hover */
+        box-shadow: 0 12px 32px rgba(155, 135, 245, 0.3); /* Deeper shadow */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* Form Inputs */
+    .signup-input {
+        border: 1px solid #D8BFD8; /* Lavender border, matching _Layout.cshtml */
+        border-radius: 8px;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .signup-input:focus {
+        border-color: #C71585; /* Darker lavender/pink on focus, matching _Layout.cshtml */
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+
+    /* Floating Label */
+    .form-floating > label {
+        color: #6e59a5; /* Lavender text */
+        font-weight: 500;
+    }
+
+    /* Validation Errors */
+    .validation-error {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    /* Sign Up Button */
+    .btn-signup {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-signup:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+
+    /* Login Link */
+    .login-link {
+        color: #6e59a5; /* Lavender text */
+        font-size: 0.875rem;
+    }
+
+    .login-link a {
+        color: #9b87f5; /* Lavender primary */
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #7e69ab; /* Lavender dark on hover */
+    }
+</style>

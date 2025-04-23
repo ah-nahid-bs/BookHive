@@ -2,9 +2,86 @@
     ViewData["Title"] = "Order Confirmation";
 }
 
-<div class="container py-4 text-center">
-    <h2 class="mb-4">Thank You for Your Order!</h2>
-    <p>Your order has been successfully placed. You can view your order history for details.</p>
-    <a asp-action="History" asp-controller="Order" class="btn btn-primary">View Order History</a>
-    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Continue Shopping</a>
+<div class="container py-4 text-center confirmation-container">
+    <h2 class="mb-4 section-heading">Thank You for Your Order!</h2>
+    <p class="confirmation-message">Your order has been successfully placed. You can view your order history for details.</p>
+    <div class="confirmation-actions">
+        <a asp-action="History" asp-controller="Order" class="btn btn-view-history">View Order History</a>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-continue-shopping">Continue Shopping</a>
+    </div>
 </div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+    }
+
+    /* Container */
+    .confirmation-container {
+        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Light lavender gradient */
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+        transition: box-shadow 0.3s ease;
+    }
+
+    .confirmation-container:hover {
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Deeper shadow on hover */
+    }
+
+    /* Section Heading */
+    .section-heading {
+        color: #3c2f5f; /* Dark purple, matching other pages */
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    /* Confirmation Message */
+    .confirmation-message {
+        color: #6e59a5; /* Lavender text */
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 2rem;
+    }
+
+    /* Confirmation Actions */
+    .confirmation-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    /* View Order History Button */
+    .btn-view-history {
+        background: #9b87f5; /* Lavender primary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-history:hover {
+        background: #7e69ab; /* Lavender dark for hover */
+    }
+
+    /* Continue Shopping Button */
+    .btn-continue-shopping {
+        background: #6e59a5; /* Lavender secondary */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-continue-shopping:hover {
+        background: #5a4a87; /* Darker lavender for hover */
+    }
+</style>

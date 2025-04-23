@@ -44,3 +44,82 @@
         <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<style>
+    /* Container Styling */
+    .container {
+        background-color: #fff; /* White background for contrast */
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        padding: 20px;
+    }
+
+    /* Heading */
+    h2 {
+        color: #333; /* Dark text for readability */
+        font-weight: 600;
+        border-bottom: 2px solid #D8BFD8; /* Lavender accent underline */
+        padding-bottom: 10px;
+    }
+
+    /* Form Styling */
+    .form-label {
+        color: #333; /* Dark text */
+        font-weight: 500;
+    }
+    .form-control, .form-select {
+        border: 1px solid #D8BFD8; /* Lavender border */
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #C71585; /* Darker lavender/pink on focus */
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+    .form-check-input {
+        border: 1px solid #D8BFD8; /* Lavender border for checkboxes */
+        transition: border-color 0.3s ease;
+    }
+    .form-check-input:checked {
+        background-color: #D8BFD8; /* Lavender background when checked */
+        border-color: #D8BFD8;
+    }
+    .form-check-input:focus {
+        border-color: #C71585;
+        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        outline: none;
+    }
+    .form-check-label {
+        color: #333; /* Dark text */
+        margin-left: 5px;
+    }
+
+    /* Button Styling */
+    .btn-primary {
+        background-color: #D8BFD8 !important; /* Lavender for "Save" */
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #C71585 !important; /* Darker lavender/pink on hover */
+        border-color: #C71585 !important;
+    }
+    .btn-secondary {
+        background-color: #ccc !important; /* Gray for "Cancel" */
+        border-color: #ccc !important;
+        color: #333 !important;
+        border-radius: 5px;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #b3b3b3 !important; /* Darker gray on hover */
+        border-color: #b3b3b3 !important;
+    }
+</style>
