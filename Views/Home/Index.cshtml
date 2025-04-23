@@ -345,3 +345,24 @@
 
     
 </div>
+<script>
+    function slideFeaturedLeft() {
+        const slider = document.getElementById('featuredSlider');
+        slider.scrollLeft -= 250;
+    }
+
+    function slideFeaturedRight() {
+        const slider = document.getElementById('featuredSlider');
+        slider.scrollLeft += 250;
+    }
+
+    function slideLeft(sliderId) {
+        const slider = document.getElementById(sliderId);
+        slider.scrollLeft -= 250;
+    }
+
+    function slideRight(sliderId) {
+        const slider = document.getElementById(sliderId);
+        slider.scrollLeft += 250;
+    }
+</script>
