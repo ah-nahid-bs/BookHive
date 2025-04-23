@@ -70,21 +70,29 @@ public class ProductController : Controller
             });
             return View(model);
         }
-        Console.WriteLine("Model State: valid");
-
-        var book = new Book
+        string uniqueFileName = null;
+        if (model.Image != null)
         {
-            Title = model.Title,
-            Author = model.Author,
-            Price = model.Price,
-            IsFeatured = model.IsFeatured,
-            CategoryId = model.CategoryId,
-            IsDiscounted = model.IsDiscounted,
-            PublishDate = model.PublishDate
-        };
-        Console.WriteLine("adding book");
-        await _bookService.AddAsync(book);
-        Console.WriteLine("added book");
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.Image.CopyToAsync(fileStream);
+            }
+            var book = new Book
+            {
+                Title = model.Title,
+                Author = model.Author,
+                Price = model.Price,
+                IsFeatured = model.IsFeatured,
+                CategoryId = model.CategoryId,
+                IsDiscounted = model.IsDiscounted,
+                PublishDate = model.PublishDate,
+                ImageUrl = "/images/" + uniqueFileName
+            };
+            await _bookService.AddAsync(book);
+        }
         return RedirectToAction("Index");
     }
 
@@ -130,31 +138,41 @@ public class ProductController : Controller
         var book = await _bookService.GetByIdAsync(model.Id);
         if (book == null) return NotFound();
 
+        if (model.Image != null)
+        {
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.Image.CopyToAsync(stream);
+            }
+
+            if (!string.IsNullOrEmpty(book.ImageUrl))
+            {
+                string oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+            book.ImageUrl = "/images/" + uniqueFileName;
+        }
+
         book.Title = model.Title;
         book.Author = model.Author;
         book.Price = model.Price;
         book.IsFeatured = model.IsFeatured;
-        book.IsDiscounted = model.IsDiscounted;
         book.CategoryId = model.CategoryId;
+        book.IsDiscounted = model.IsDiscounted;
         book.PublishDate = model.PublishDate;
 
-        if (model.Image != null)
-        {
-            string wwwRootPath = _env.WebRootPath;
-            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
-            string path = Path.Combine(wwwRootPath + "/images/products", fileName);
-
-            using (var fileStream = new FileStream(path, FileMode.Create))
-            {
-                await model.Image.CopyToAsync(fileStream);
-            }
-
-            book.ImageUrl = "/images/products/" + fileName;
-        }
-
         await _bookService.UpdateAsync(book);
+
         return RedirectToAction("Index");
     }
+
 
     public async Task<IActionResult> Delete(int id)
     {
