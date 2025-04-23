@@ -20,7 +20,7 @@
         border-radius: 12px;
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        width: 200px; /* Fixed width as per the snippet */
+        width: 220px;
         flex-shrink: 0;
     }
 
@@ -30,7 +30,7 @@
     }
 
     .book-image {
-        height: 180px; /* Fixed height as per the snippet */
+        height: 200px;
         object-fit: cover;
         border-bottom: 1px solid rgba(155, 135, 245, 0.1);
     }
@@ -205,8 +205,8 @@
                     {
                         foreach (var book in featuredItems)
                         {
-                            <div class="book-card shadow-sm p-4">
-                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 " />
+                            <div class="book-card shadow-sm">
+                                <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 pt-5 ps-5 pe-5" />
                                 <div class="book-card-body d-flex flex-column">
                                     <h6 class="book-title">@book.Title</h6>
                                     @* <p class="author-name">by @authorName</p> *@
