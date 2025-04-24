@@ -1,0 +1,434 @@
+@model BookHive.ViewModels.SearchViewModel
+
+@{
+    ViewData["Title"] = "Search Books";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 section-heading">Search Books</h2>
+
+    <!-- Search Results -->
+    <div id="searchResults">
+        @if (Model.Results.Any())
+        {
+            <div class="row">
+                @foreach (var book in Model.Results)
+                {
+                    <div class="col-md-3 mb-4">
+                        <div class="book-card shadow-sm" data-book-id="@book.Id">
+                            <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 pt-5 ps-5 pe-5" />
+                            <div class="book-card-body d-flex flex-column">
+                                <h6 class="book-title">@book.Title</h6>
+                                <p class="author-name">@book.Author</p>
+                                <p class="current-price">৳@book.Price</p>
+                                <div class="d-flex gap-2 mt-auto">
+                                    <a href="/Books/Details/@book.Id" class="btn btn-details btn-sm flex-grow-1">View</a>
+                                    <button class="btn btn-wishlist btn-sm" title="Add to Wishlist" data-book-id="@book.Id">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Search results pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                        <button class="page-link" data-page="@(Model.CurrentPage - 1)" onclick="changePage(@(Model.CurrentPage - 1))">Previous</button>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page @Model.CurrentPage of @Model.TotalPages</span>
+                    </li>
+                    <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                        <button class="page-link" data-page="@(Model.CurrentPage + 1)" onclick="changePage(@(Model.CurrentPage + 1))">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.Query))
+        {
+            <div class="alert alert-info no-books-alert">No books found for "@Model.Query".</div>
+        }
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="wishlistToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Wishlist</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+        <div id="searchToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Search</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --lavender-primary: hsl(270, 50%, 70%);
+        --lavender-light: hsl(270, 30%, 90%);
+        --lavender-dark: hsl(270, 40%, 40%);
+    }
+
+    .section-heading {
+        color: #3c2f5f;
+        font-weight: 600;
+        font-size: 1.75rem;
+    }
+
+    .no-books-alert {
+        background: var(--lavender-light);
+        border: 1px solid var(--lavender-primary);
+        color: #6e59a5;
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .book-card {
+        background: linear-gradient(135deg, #ffffff, var(--lavender-light));
+        border: 1px solid rgba(155, 135, 245, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3);
+    }
+
+    .book-image {
+        height: 250px;
+        object-fit: cover;
+        border-bottom: 1px solid rgba(155, 135, 245, 0.1);
+    }
+
+    .book-card-body {
+        padding: 1rem;
+    }
+
+    .book-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #3c2f5f;
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .author-name {
+        font-size: 0.875rem;
+        color: #6e59a5;
+        margin-bottom: 0.5rem;
+    }
+
+    .current-price {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--lavender-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-details {
+        background: var(--lavender-primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+    .btn-details:hover {
+        background: var(--lavender-dark);
+        color: white;
+    }
+
+    .btn-wishlist {
+        background: #ffffff;
+        border: 1px solid var(--lavender-primary);
+        border-radius: 8px;
+        padding: 0.5rem;
+        color: var(--lavender-primary);
+        transition: all 0.3s ease;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-wishlist:hover {
+        background: var(--lavender-primary);
+        color: #ffffff;
+    }
+
+    .btn-wishlist.added {
+        background: var(--lavender-primary);
+        color: #ffffff;
+        border-color: var(--lavender-primary);
+    }
+
+    .btn-wishlist.added i.bi-heart::before {
+        content: "\f443";
+    }
+
+    .btn-search {
+        background: var(--lavender-primary);
+        color: white;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background: var(--lavender-dark);
+    }
+
+    .input-group .form-control {
+        border: 1px solid var(--lavender-primary);
+        border-radius: 8px 0 0 8px;
+        border-right: none;
+        background: var(--lavender-light);
+        color: #6e59a5;
+    }
+
+    .input-group .form-control:focus {
+        border-color: var(--lavender-dark);
+        box-shadow: 0 0 0 0.2rem rgba(155, 135, 245, 0.25);
+    }
+
+    .toast {
+        background: var(--lavender-light);
+        border: 1px solid var(--lavender-primary);
+    }
+
+    .toast-header {
+        background: var(--lavender-primary);
+        color: white;
+    }
+
+    .pagination .page-link {
+        color: var(--lavender-primary);
+        background-color: var(--lavender-light);
+        border: 1px solid var(--lavender-primary);
+        border-radius: 8px;
+        margin: 0 4px;
+        transition: all 0.3s ease;
+    }
+
+    .pagination .page-link:hover {
+        background-color: var(--lavender-primary);
+        color: white;
+        border-color: var(--lavender-dark);
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6e59a5;
+        background-color: var(--lavender-light);
+        border-color: var(--lavender-primary);
+        opacity: 0.5;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--lavender-primary);
+        border-color: var(--lavender-dark);
+        color: white;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
+            const navbarSearchForm = document.getElementById('navbarSearchForm');
+            const resultsContainer = document.getElementById('searchResults');
+            const pageSize = 12; // Books per page
+            let currentPage = @Model.CurrentPage; // Initial page from model
+            let totalPages = @Model.TotalPages; // Initial total pages
+            let currentQuery = '@Model.Query'; // Initial query
+
+            // Handle navbar search form submission
+            if (navbarSearchForm) {
+                navbarSearchForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const query = this.querySelector('input[name="query"]').value.trim();
+                    if (!query) {
+                        showToast('Please enter a search query.', 'searchToast');
+                        resultsContainer.innerHTML = '<div class="alert alert-info no-books-alert">Please enter a search query.</div>';
+                        return;
+                    }
+                    currentQuery = query;
+                    currentPage = 1; // Reset to first page on new search
+                    performSearch(query, currentPage);
+                });
+            }
+
+            // Initialize Wishlist handlers
+            attachWishlistHandlers();
+
+            // Pagination function
+            window.changePage = function(page) {
+                if (page < 1 || page > totalPages) return;
+                currentPage = page;
+                if (currentQuery) {
+                    performSearch(currentQuery, page);
+                }
+            };
+
+            function performSearch(query, page) {
+                const searchUrl = `/Books/Search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`;
+                fetch(searchUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = '';
+                    if (data.results.length > 0) {
+                        let html = '<div class="row">';
+                        data.results.forEach(book => {
+                            html += `
+                                <div class="col-md-3 mb-4">
+                                    <div class="book-card shadow-sm" data-book-id="${book.Id}">
+                                        <img src="${book.ImageUrl}" alt="${book.Title}" class="book-image w-100 pt-5 ps-5 pe-5" />
+                                        <div class="book-card-body d-flex flex-column">
+                                            <h6 class="book-title">${book.Title}</h6>
+                                            <p class="author-name">${book.Author}</p>
+                                            <p class="current-price">৳${book.Price}</p>
+                                            <div class="d-flex gap-2 mt-auto">
+                                                <a href="/Books/Details/${book.Id}" class="btn btn-details btn-sm flex-grow-1">View</a>
+                                                <button class="btn btn-wishlist btn-sm" title="Add to Wishlist" data-book-id="${book.Id}">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                        html += '</div>';
+
+                        // Add pagination controls
+                        totalPages = data.totalPages; // Update totalPages dynamically
+                        html += `
+                            <nav aria-label="Search results pagination" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item ${data.currentPage <= 1 ? 'disabled' : ''}">
+                                        <button class="page-link" data-page="${data.currentPage - 1}" onclick="changePage(${data.currentPage - 1})">Previous</button>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Page ${data.currentPage} of ${data.totalPages}</span>
+                                    </li>
+                                    <li class="page-item ${data.currentPage >= data.totalPages ? 'disabled' : ''}">
+                                        <button class="page-link" data-page="${data.currentPage + 1}" onclick="changePage(${data.currentPage + 1})">Next</button>
+                                    </li>
+                                </ul>
+                            </nav>`;
+                        resultsContainer.innerHTML = html;
+                    } else {
+                        resultsContainer.innerHTML = `<div class="alert alert-info no-books-alert">No books found for "${query}".</div>`;
+                    }
+                    attachWishlistHandlers();
+                })
+                .catch(error => {
+                    console.error('AJAX Search Error:', error);
+                    // Fallback to GET if AJAX fails
+                    window.location.href = `/Books/Search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`;
+                });
+            }
+
+
+            function attachWishlistHandlers() {
+                // Remove existing listeners to prevent duplicates
+                document.querySelectorAll('.btn-wishlist').forEach(button => {
+                    button.replaceWith(button.cloneNode(true));
+                });
+
+                if (isAuthenticated) {
+                    fetch('/Wishlist/GetWishlistBookIds', {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(bookIds => {
+                        document.querySelectorAll('.btn-wishlist').forEach(button => {
+                            const bookId = button.getAttribute('data-book-id');
+                            if (bookIds.includes(parseInt(bookId))) {
+                                button.classList.add('added');
+                            }
+                        });
+                    })
+                    .catch(error => console.error('Error fetching wishlist:', error));
+                }
+
+                document.querySelectorAll('.btn-wishlist').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const bookId = this.getAttribute('data-book-id');
+                        if (!isAuthenticated) {
+                            showToast('Please log in to manage your wishlist.', 'wishlistToast');
+                            window.location.href = '/Account/Login';
+                            return;
+                        }
+
+                        const isAdded = this.classList.contains('added');
+                        const url = isAdded ? '/Wishlist/RemoveFromWishlist' : '/Wishlist/AddToWishlist';
+
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ bookId: bookId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const toast = new bootstrap.Toast(document.getElementById('wishlistToast'));
+                            const toastBody = document.querySelector('#wishlistToast .toast-body');
+
+                            if (data.success) {
+                                this.classList.toggle('added');
+                                toastBody.textContent = isAdded ? 'Book removed from wishlist!' : 'Book added to wishlist!';
+                                toast.show();
+                            } else {
+                                toastBody.textContent = 'Error: ' + (data.message || 'Could not update wishlist.');
+                                toast.show();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showToast('An error occurred while updating the wishlist.', 'wishlistToast');
+                        });
+                    });
+                });
+            }
+
+            function showToast(message, toastId) {
+                const toast = new bootstrap.Toast(document.getElementById(toastId));
+                const toastBody = document.querySelector(`#${toastId} .toast-body`);
+                toastBody.textContent = message;
+                toast.show();
+            }
+        });
+    </script>
+}

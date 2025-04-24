@@ -60,4 +60,65 @@ public class BooksController : Controller
 
         return View(viewModel);
     }
+    // [HttpGet]
+    // public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 12)
+    // {
+    //     var model = new SearchViewModel
+    //     {
+    //         Query = query,
+    //         PageSize = pageSize,
+    //         CurrentPage = page
+    //     };
+
+    //     if (!string.IsNullOrWhiteSpace(query))
+    //     {
+    //         var (results, totalCount) = await _bookService.SearchBooksAsync(query, page, pageSize);
+    //         model.Results = results.ToList();
+    //         model.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+    //     }
+
+    //     return View(model);
+    // }
+    [HttpGet]
+    public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 12)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return View(new SearchViewModel());
+        }
+
+        var (results, totalCount) = await _bookService.SearchBooksAsync(query, page, pageSize);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var model = new SearchViewModel
+        {
+            Query = query,
+            Results = results.ToList(),
+            CurrentPage = page,
+            TotalPages = totalPages
+        };
+
+        return View(model);
+    }
+
+
+    [HttpPost]
+    public IActionResult RedirectToSearch(SearchViewModel model)
+    {
+        return RedirectToAction("Search", "Books", new { query = model.Query });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SearchAjax([FromBody] SearchViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Query))
+        {
+            return Json(new { results = new List<BookViewModel>(), currentPage = 1, totalPages = 1 });
+        }
+
+        var (results, totalCount) = await _bookService.SearchBooksAsync(model.Query, model.CurrentPage, model.PageSize);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)model.PageSize);
+        return Json(new { results, currentPage = model.CurrentPage, totalPages });
+    }
+
 }

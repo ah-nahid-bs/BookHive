@@ -20,7 +20,7 @@ public class BookViewModel
 
     public int CategoryId { get; set; }
 
-    public string CategoryName { get; set; } = string.Empty;  // Add this property
+    public string CategoryName { get; set; } = string.Empty;
 
     public DateOnly PublishDate { get; set; }
 

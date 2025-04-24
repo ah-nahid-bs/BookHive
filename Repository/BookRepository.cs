@@ -107,6 +107,28 @@ public class BookRepository : IBookRepository
             .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
+    public async Task<(IEnumerable<Book>, int)> SearchBooksAsync(string query, int page, int pageSize)
+    {
+        IQueryable<Book> queryable = _context.Books.Include(b => b.Category);
 
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            query = query.ToLower();
+            queryable = queryable.Where(b =>
+                b.Title.ToLower().Contains(query) ||
+                b.Author.ToLower().Contains(query) ||
+                b.Category.Name.ToLower().Contains(query));
+        }
+
+        var totalCount = await queryable.CountAsync();
+
+        var books = await queryable
+            .OrderBy(b => b.Title)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (books, totalCount);
+    }
 
 }
