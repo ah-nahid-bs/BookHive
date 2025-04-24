@@ -1,31 +1,27 @@
-@model BookHive.ViewModels.CategoryBooksViewModel
-
-@{
-    ViewData["Title"] = $"{Model.CategoryName} Books";
-}
+@model IEnumerable<BookHive.ViewModels.WishlistViewModel>
 
 <div class="container py-4">
-    <h2 class="mb-4 section-heading">Books in "@Model.CategoryName"</h2>
+    <h2 class="section-heading">My Wishlist</h2>
 
-    @if (!Model.Books.Any())
+    @if (!Model.Any())
     {
-        <div class="alert alert-info no-books-alert">No books found in this category.</div>
+        <div class="alert alert-info no-books-alert">Your wishlist is empty.</div>
     }
     else
     {
         <div class="row">
-            @foreach (var book in Model.Books)
+            @foreach (var item in Model)
             {
                 <div class="col-md-3 mb-4">
-                    <div class="book-card shadow-sm" data-book-id="@book.Id">
-                        <img src="@book.ImageUrl" alt="@book.Title" class="book-image w-100 pt-5 ps-5 pe-5" />
+                    <div class="book-card shadow-sm" data-book-id="@item.BookId">
+                        <img src="@item.ImageUrl" alt="@item.Title" class="book-image w-100 pt-5 ps-5 pe-5" />
                         <div class="book-card-body d-flex flex-column">
-                            <h6 class="book-title">@book.Title</h6>
-                            <p class="current-price">৳@book.Price</p>
+                            <h6 class="book-title">@item.Title</h6>
+                            <p class="current-price">৳@item.Price</p>
                             <div class="d-flex gap-2 mt-auto">
-                                <a href="/Books/Details/@book.Id" class="btn btn-details btn-sm flex-grow-1">View</a>
-                                <button class="btn btn-wishlist btn-sm" title="Add to Wishlist" data-book-id="@book.Id">
-                                    <i class="bi bi-heart"></i>
+                                <a href="/Books/Details/@item.BookId" class="btn btn-details btn-sm flex-grow-1">View</a>
+                                <button class="btn btn-wishlist btn-sm added" title="Remove from Wishlist" data-book-id="@item.BookId">
+                                    <i class="bi bi-heart-fill"></i>
                                 </button>
                             </div>
                         </div>
@@ -49,17 +45,12 @@
 
 <style>
     :root {
-        --lavender-primary: hsl(270, 50%, 70%);
-        --lavender-light: hsl(270, 30%, 90%);
-        --lavender-dark: hsl(270, 40%, 40%);
+        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
+        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
+        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
     }
 
-    .section-heading {
-        color: #3c2f5f;
-        font-weight: 600;
-        font-size: 1.75rem;
-    }
-
+    /* No Books Alert */
     .no-books-alert {
         background: var(--lavender-light);
         border: 1px solid var(--lavender-primary);
@@ -70,6 +61,7 @@
         text-align: center;
     }
 
+    /* Book Card */
     .book-card {
         background: linear-gradient(135deg, #ffffff, var(--lavender-light));
         border: 1px solid rgba(155, 135, 245, 0.2);
@@ -83,16 +75,19 @@
         box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3);
     }
 
+    /* Book Image */
     .book-image {
         height: 250px;
         object-fit: cover;
         border-bottom: 1px solid rgba(155, 135, 245, 0.1);
     }
 
+    /* Book Card Body */
     .book-card-body {
         padding: 1rem;
     }
 
+    /* Book Title */
     .book-title {
         font-size: 1rem;
         font-weight: 600;
@@ -104,6 +99,7 @@
         overflow: hidden;
     }
 
+    /* Price */
     .current-price {
         font-size: 1rem;
         font-weight: 600;
@@ -111,6 +107,7 @@
         margin-bottom: 0.5rem;
     }
 
+    /* View Details Button */
     .btn-details {
         background: var(--lavender-primary);
         color: white;
@@ -127,6 +124,7 @@
         color: white;
     }
 
+    /* Wishlist Button */
     .btn-wishlist {
         background: #ffffff;
         border: 1px solid var(--lavender-primary);
@@ -154,40 +152,10 @@
     .btn-wishlist.added i.bi-heart::before {
         content: "\f443"; /* Bootstrap Icons filled heart (bi-heart-fill) */
     }
-
-    .toast {
-        background: var(--lavender-light);
-        border: 1px solid var(--lavender-primary);
-    }
-
-    .toast-header {
-        background: var(--lavender-primary);
-        color: white;
-    }
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
-        if (isAuthenticated) {
-            fetch('/Wishlist/GetWishlistBookIds', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(bookIds => {
-                document.querySelectorAll('.btn-wishlist').forEach(button => {
-                    const bookId = button.getAttribute('data-book-id');
-                    if (bookIds.includes(parseInt(bookId))) {
-                        button.classList.add('added');
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching wishlist:', error));
-        }
-
+@section Scripts {
+    <script>
         document.querySelectorAll('.btn-wishlist').forEach(button => {
             button.addEventListener('click', function () {
                 const bookId = this.getAttribute('data-book-id');
@@ -216,8 +184,17 @@
                     const toastBody = document.querySelector('#wishlistToast .toast-body');
 
                     if (data.success) {
-                        this.classList.toggle('added');
-                        toastBody.textContent = isAdded ? 'Book removed from wishlist!' : 'Book added to wishlist!';
+                        if (isAdded) {
+                            // Remove book card
+                            this.closest('.col-md-3').remove();
+                            if (document.querySelectorAll('.col-md-3').length === 0) {
+                                document.querySelector('.row').innerHTML = '<div class="alert alert-info no-books-alert">Your wishlist is empty.</div>';
+                            }
+                            toastBody.textContent = 'Book removed from wishlist!';
+                        } else {
+                            this.classList.add('added');
+                            toastBody.textContent = 'Book added to wishlist!';
+                        }
                         toast.show();
                     } else {
                         toastBody.textContent = 'Error: ' + (data.message || 'Could not update wishlist.');
@@ -232,5 +209,5 @@
                 });
             });
         });
-    });
-</script>
+    </script>
+}
