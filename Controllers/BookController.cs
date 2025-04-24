@@ -60,25 +60,6 @@ public class BooksController : Controller
 
         return View(viewModel);
     }
-    // [HttpGet]
-    // public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 12)
-    // {
-    //     var model = new SearchViewModel
-    //     {
-    //         Query = query,
-    //         PageSize = pageSize,
-    //         CurrentPage = page
-    //     };
-
-    //     if (!string.IsNullOrWhiteSpace(query))
-    //     {
-    //         var (results, totalCount) = await _bookService.SearchBooksAsync(query, page, pageSize);
-    //         model.Results = results.ToList();
-    //         model.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-    //     }
-
-    //     return View(model);
-    // }
     [HttpGet]
     public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 12)
     {
