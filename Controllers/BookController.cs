@@ -83,7 +83,7 @@ public class BooksController : Controller
     }
 
 
-    [HttpPost]
+    [HttpGet]
     public IActionResult RedirectToSearch(SearchViewModel model)
     {
         return RedirectToAction("Search", "Books", new { query = model.Query });
