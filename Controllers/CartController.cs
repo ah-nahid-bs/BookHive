@@ -1,4 +1,5 @@
 using BookHive.Interfaces;
+using BookHive.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -50,5 +51,45 @@ public class CartController : Controller
         var userId = GetUserId();
         await _cartService.ClearCartAsync(userId);
         return RedirectToAction("Index");
+    }
+    [HttpPost]
+    public async Task<IActionResult> Update([FromBody] UpdateCartViewModel model)
+    {
+        Console.WriteLine("this was here");
+        if (!ModelState.IsValid || model.CartItemId <= 0 || model.Quantity <= 0)
+        {
+            return Json(new { success = false, message = "Invalid cart item ID or quantity." });
+        }
+
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var success = await _cartService.UpdateCartItemAsync(userId, model.CartItemId, model.Quantity);
+            return Json(new { success = success, message = success ? null : "Could not update cart item." });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occurred while updating the cart item." });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Remove([FromBody] RemoveCartViewModel model)
+    {
+        if (!ModelState.IsValid || model.CartItemId <= 0)
+        {
+            return Json(new { success = false, message = "Invalid cart item ID." });
+        }
+
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var success = await _cartService.RemoveCartItemAsync(userId, model.CartItemId);
+            return Json(new { success = success, message = success ? null : "Could not remove cart item." });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occurred while removing the cart item." });
+        }
     }
 }

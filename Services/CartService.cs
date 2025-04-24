@@ -47,5 +47,37 @@ public class CartService : ICartService
         var items = await GetCartItemsAsync(userId);
         return items.Sum(i => i.Total);
     }
+    public async Task<bool> UpdateCartItemAsync(string userId, int cartItemId, int quantity)
+    {
+        if (string.IsNullOrEmpty(userId) || cartItemId <= 0 || quantity <= 0)
+        {
+            return false;
+        }
+
+        var cartItem = await _cartRepository.GetCartItemByIdAsync(userId, cartItemId);
+        if (cartItem == null)
+        {
+            return false;
+        }
+
+        cartItem.Quantity = quantity;
+        return await _cartRepository.UpdateCartItemAsync(cartItem);
+    }
+
+    public async Task<bool> RemoveCartItemAsync(string userId, int cartItemId)
+    {
+        if (string.IsNullOrEmpty(userId) || cartItemId <= 0)
+        {
+            return false;
+        }
+
+        var cartItem = await _cartRepository.GetCartItemByIdAsync(userId, cartItemId);
+        if (cartItem == null)
+        {
+            return false;
+        }
+
+        return await _cartRepository.RemoveCartItemAsync(cartItem);
+    }
 
 }
