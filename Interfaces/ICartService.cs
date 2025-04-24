@@ -8,5 +8,7 @@ public interface ICartService
     Task RemoveFromCartAsync(int cartItemId);
     Task ClearCartAsync(string userId);
     Task<decimal> GetCartTotalAsync(string userId);
+    Task<bool> UpdateCartItemAsync(string userId, int cartItemId, int quantity);
+    Task<bool> RemoveCartItemAsync(string userId, int cartItemId);
 
 }
