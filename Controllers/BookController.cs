@@ -1,3 +1,4 @@
+using BookHive.Extensions;
 using BookHive.Interfaces;
 using BookHive.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -60,4 +61,45 @@ public class BooksController : Controller
 
         return View(viewModel);
     }
+    [HttpGet]
+    public async Task<IActionResult> Search(string query, int page = 1, int pageSize = 12)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return View(new SearchViewModel());
+        }
+
+        var (results, totalCount) = await _bookService.SearchBooksAsync(query, page, pageSize);
+
+        var model = new SearchViewModel
+        {
+            Query = query,
+            Results = results.ToList(),
+            CurrentPage = page,
+            TotalPages = totalCount.TotalPages(pageSize),
+            PageSize = pageSize
+        };
+
+        return View(model);
+    }
+
+
+    [HttpGet]
+    public IActionResult RedirectToSearch(SearchViewModel model)
+    {
+        return RedirectToAction("Search", "Books", new { query = model.Query });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SearchAjax([FromBody] SearchViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Query))
+        {
+            return Json(new { results = new List<BookViewModel>(), currentPage = 1, totalPages = 1 });
+        }
+
+        var (results, totalCount) = await _bookService.SearchBooksAsync(model.Query, model.CurrentPage, model.PageSize);
+        return Json(new { results, currentPage = model.CurrentPage, totalPages = totalCount.TotalPages(model.PageSize) });
+    }
+
 }

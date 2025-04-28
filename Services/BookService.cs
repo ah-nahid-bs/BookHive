@@ -49,7 +49,19 @@ public class BookService : IBookService
     {
         return await _bookRepository.GetBookByIdAsync(id);
     }
-
-
+    public async Task<(IEnumerable<BookViewModel>, int)> SearchBooksAsync(string query, int page, int pageSize)
+    {
+        var (books, totalCount) = await _bookRepository.SearchBooksAsync(query, page, pageSize);
+        var results = books.Select(b => new BookViewModel
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Author = b.Author,
+            CategoryName = b.Category.Name,
+            Price = b.Price,
+            ImageUrl = b.ImageUrl
+        });
+        return (results, totalCount);
+    }
 }
 

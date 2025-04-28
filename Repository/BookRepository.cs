@@ -1,4 +1,5 @@
 using BookHive.Data;
+using BookHive.Extensions;
 using BookHive.Interfaces;
 using BookHive.Models;
 using BookHive.ViewModels;
@@ -107,6 +108,27 @@ public class BookRepository : IBookRepository
             .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
+    public async Task<(IEnumerable<Book>, int)> SearchBooksAsync(string query, int page, int pageSize)
+    {
+        IQueryable<Book> queryable = _context.Books.Include(b => b.Category);
 
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            query = query.ToLower();
+            queryable = queryable.Where(b =>
+                b.Title.ToLower().Contains(query) ||
+                b.Author.ToLower().Contains(query) ||
+                b.Category.Name.ToLower().Contains(query));
+        }
+
+        var totalCount = await queryable.CountAsync();
+
+        var books = await queryable
+            .OrderBy(b => b.Title)
+            .ApplyPagination(page, pageSize)
+            .ToListAsync();
+
+        return (books, totalCount);
+    }
 
 }

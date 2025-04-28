@@ -16,5 +16,6 @@ public interface IBookService
     Task DeleteAsync(int id);
     Task<IEnumerable<Book>> GetBooksByCategoryAsync(string categoryName);
     Task<Book?> GetBookDetailsAsync(int id);
+    Task<(IEnumerable<BookViewModel>, int)> SearchBooksAsync(string query, int page, int pageSize);
 
 }
