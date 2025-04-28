@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookHive.ViewModels;
@@ -27,4 +28,6 @@ public class BookViewModel
     public bool IsDiscounted { get; set; }
 
     public IEnumerable<SelectListItem>? Categories { get; set; }
+
+    public List<ReviewViewModel> Reviews { get; set; } = new List<ReviewViewModel>();
 }
