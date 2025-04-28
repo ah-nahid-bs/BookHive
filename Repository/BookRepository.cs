@@ -1,4 +1,5 @@
 using BookHive.Data;
+using BookHive.Extensions;
 using BookHive.Interfaces;
 using BookHive.Models;
 using BookHive.ViewModels;
@@ -124,8 +125,7 @@ public class BookRepository : IBookRepository
 
         var books = await queryable
             .OrderBy(b => b.Title)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .ApplyPagination(page, pageSize)
             .ToListAsync();
 
         return (books, totalCount);

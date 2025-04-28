@@ -1,3 +1,4 @@
+using BookHive.Extensions;
 using BookHive.Interfaces;
 using BookHive.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -69,14 +70,14 @@ public class BooksController : Controller
         }
 
         var (results, totalCount) = await _bookService.SearchBooksAsync(query, page, pageSize);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var model = new SearchViewModel
         {
             Query = query,
             Results = results.ToList(),
             CurrentPage = page,
-            TotalPages = totalPages
+            TotalPages = totalCount.TotalPages(pageSize),
+            PageSize = pageSize
         };
 
         return View(model);
@@ -98,8 +99,7 @@ public class BooksController : Controller
         }
 
         var (results, totalCount) = await _bookService.SearchBooksAsync(model.Query, model.CurrentPage, model.PageSize);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)model.PageSize);
-        return Json(new { results, currentPage = model.CurrentPage, totalPages });
+        return Json(new { results, currentPage = model.CurrentPage, totalPages = totalCount.TotalPages(model.PageSize) });
     }
 
 }
