@@ -1,0 +1,54 @@
+@model BookHive.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "Update Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm" style="background: linear-gradient(135deg, #f8f4ff, #e6e0ff); border-radius: 15px;">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4" style="color: #7e69ab;">Update Profile</h2>
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+                    <form asp-action="UpdateProfile" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label" style="color: #7e69ab;"></label>
+                            <input asp-for="Name" class="form-control" style="border-color: #9b87f5;" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label" style="color: #7e69ab;"></label>
+                            <input asp-for="Email" class="form-control" style="border-color: #9b87f5;" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label" style="color: #7e69ab;"></label>
+                            <input asp-for="PhoneNumber" class="form-control" style="border-color: #9b87f5;" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label" style="color: #7e69ab;"></label>
+                            <textarea asp-for="Address" class="form-control" rows="4" style="border-color: #9b87f5;"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn" style="background-color: #9b87f5; color: #fff; border-radius: 10px; padding: 10px 20px;">Save Changes</button>
+                            <a asp-action="Profile" class="btn" style="background-color: #7e69ab; color: #fff; border-radius: 10px; padding: 10px 20px;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
