@@ -43,9 +43,9 @@ public class OrderRepository : IOrderRepository
     public async Task<Order> GetOrderByIdAsync(int orderId)
     {
         return await _context.Orders
-            .Include(o => o.User)
             .Include(o => o.Items)
             .ThenInclude(oi => oi.Book)
+            .Include(o => o.User)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 }

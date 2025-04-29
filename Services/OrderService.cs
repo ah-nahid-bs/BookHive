@@ -1,20 +1,24 @@
+using BookHive.Data;
 using BookHive.Interfaces;
 using BookHive.Models;
 using BookHive.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookHive.Services;
 
 public class OrderService : IOrderService
 {
+    private readonly DataContext _context;
     private readonly IOrderRepository _orderRepository;
     private readonly ICartRepository _cartRepository;
     private readonly ICartService _cartService;
 
-    public OrderService(IOrderRepository orderRepository, ICartRepository cartRepository, ICartService cartService)
+    public OrderService(IOrderRepository orderRepository, ICartRepository cartRepository, ICartService cartService, DataContext context)
     {
         _orderRepository = orderRepository;
         _cartRepository = cartRepository;
         _cartService = cartService;
+        _context = context;
     }
 
     public async Task CreateOrderAsync(string userId)
@@ -32,7 +36,8 @@ public class OrderService : IOrderService
             {
                 BookId = ci.BookId,
                 Quantity = ci.Quantity,
-                Price = ci.Book.Price 
+                Price = ci.Book.Price,
+                Status = OrderStatus.Pending
             }).ToList()
         };
 
@@ -43,7 +48,7 @@ public class OrderService : IOrderService
         }
 
         await _orderRepository.CreateOrderAsync(order);
-        await _cartRepository.ClearCartAsync(userId); 
+        await _cartRepository.ClearCartAsync(userId);
     }
 
     public async Task<List<OrderViewModel>> GetUserOrdersAsync(string userId)
@@ -58,10 +63,11 @@ public class OrderService : IOrderService
             {
                 Id = oi.Id,
                 BookId = oi.BookId,
-                Title = oi.Book.Title,
-                ImageUrl = oi.Book.ImageUrl,
+                Title = oi.Book?.Title ?? "Unknown",
+                ImageUrl = oi.Book?.ImageUrl ?? "",
                 Price = oi.Price,
-                Quantity = oi.Quantity
+                Quantity = oi.Quantity,
+                Status = oi.Status
             }).ToList()
         }).ToList();
     }
@@ -78,10 +84,11 @@ public class OrderService : IOrderService
             {
                 Id = oi.Id,
                 BookId = oi.BookId,
-                Title = oi.Book.Title,
-                ImageUrl = oi.Book.ImageUrl,
+                Title = oi.Book?.Title ?? "Unknown",
+                ImageUrl = oi.Book?.ImageUrl ?? "",
                 Price = oi.Price,
-                Quantity = oi.Quantity
+                Quantity = oi.Quantity,
+                Status = oi.Status
             }).ToList()
         }).ToList();
     }
@@ -101,11 +108,31 @@ public class OrderService : IOrderService
             {
                 Id = oi.Id,
                 BookId = oi.BookId,
-                Title = oi.Book.Title,
-                ImageUrl = oi.Book.ImageUrl,
+                Title = oi.Book?.Title ?? "Unknown",
+                ImageUrl = oi.Book?.ImageUrl ?? "",
                 Price = oi.Price,
-                Quantity = oi.Quantity
+                Quantity = oi.Quantity,
+                Status = oi.Status
             }).ToList()
         };
+    }
+
+    public async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+
+        if (order == null)
+        {
+            throw new Exception("Order not found.");
+        }
+
+        foreach (var item in order.Items)
+        {
+            item.Status = status;
+        }
+
+        await _context.SaveChangesAsync();
     }
 }

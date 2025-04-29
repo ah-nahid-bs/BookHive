@@ -1,4 +1,6 @@
+using BookHive.DTOs;
 using BookHive.Interfaces;
+using BookHive.Models;
 using BookHive.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -79,5 +81,23 @@ public class OrderController : Controller
             return NotFound();
 
         return View(order);
+    }
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest request)
+    {
+        var order = await _orderService.GetOrderDetailsAsync(request.OrderId);
+        if (order == null)
+        {
+            return Json(new { success = false, message = "Order not found." });
+        }
+
+        if (!Enum.TryParse<OrderStatus>(request.Status, true, out var newStatus))
+        {
+            return Json(new { success = false, message = "Invalid status." });
+        }
+
+        await _orderService.UpdateOrderStatusAsync(request.OrderId, newStatus);
+        return Json(new { success = true });
     }
 }
