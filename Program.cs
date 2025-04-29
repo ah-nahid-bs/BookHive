@@ -4,6 +4,7 @@ using BookHive.Models;
 using BookHive.Repositories;
 using BookHive.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
