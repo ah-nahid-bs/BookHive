@@ -32,6 +32,7 @@
                             <td class="total-amount">@order.TotalAmount.ToString("C")</td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-details">Details</a>
+                                <span class="btn btn-status status-@order.InferredStatus.ToLower()">@order.InferredStatus</span>
                             </td>
                         </tr>
                     }
@@ -50,16 +51,16 @@
 
     /* Section Heading */
     .section-heading {
-        color: #3c2f5f; /* Dark purple, matching other pages */
+        color: #3c2f5f;
         font-weight: 600;
         font-size: 1.75rem;
     }
 
     /* No Orders Alert */
     .no-orders-alert {
-        background: #f8f4ff; /* Light lavender background */
-        border: 1px solid #9b87f5; /* Lavender border */
-        color: #6e59a5; /* Lavender text */
+        background: #f8f4ff;
+        border: 1px solid #9b87f5;
+        color: #6e59a5;
         border-radius: 8px;
         padding: 1rem;
         font-size: 1rem;
@@ -70,24 +71,24 @@
     .table-responsive {
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
     }
 
     /* Order History Table */
     .order-history-table {
-        background: #fff; /* White background for table */
-        border: none; /* Remove default border */
-        margin-bottom: 0; /* Remove default margin */
+        background: #fff;
+        border: none;
+        margin-bottom: 0;
     }
 
     /* Table Header */
     .table-header {
-        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
-        border-bottom: 2px solid #9b87f5; /* Lavender border */
+        background: linear-gradient(135deg, #ffffff, #f8f4ff);
+        border-bottom: 2px solid #9b87f5;
     }
 
     .table-header th {
-        color: #3c2f5f; /* Dark purple */
+        color: #3c2f5f;
         font-weight: 600;
         padding: 1rem;
         font-size: 1rem;
@@ -101,40 +102,40 @@
     }
 
     .order-row:hover {
-        background: #f8f4ff; /* Light lavender on hover */
+        background: #f8f4ff;
     }
 
     .order-row td {
         vertical-align: middle;
         padding: 1rem;
         text-align: center;
-        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-color: rgba(155, 135, 245, 0.2);
     }
 
     /* Order ID */
     .order-id {
-        color: #3c2f5f; /* Dark purple */
+        color: #3c2f5f;
         font-weight: 500;
         font-size: 1rem;
     }
 
     /* Order Date */
     .order-date {
-        color: #6e59a5; /* Lavender text */
+        color: #6e59a5;
         font-weight: 500;
         font-size: 1rem;
     }
 
     /* Total Amount */
     .total-amount {
-        color: #9b87f5; /* Lavender primary */
+        color: #9b87f5;
         font-weight: 600;
         font-size: 1rem;
     }
 
     /* Details Button */
     .btn-details {
-        background: #9b87f5; /* Lavender primary */
+        background: #9b87f5;
         color: white;
         border: none;
         border-radius: 8px;
@@ -145,6 +146,42 @@
     }
 
     .btn-details:hover {
-        background: #7e69ab; /* Lavender dark for hover */
+        background: #7e69ab;
+    }
+
+    /* Status Button */
+    .btn-status {
+        background: #9b87f5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        display: inline-block;
+        cursor: default;
+        margin-left: 0.5rem;
+    }
+
+    /* Status-specific colors */
+    .status-pending {
+        background-color: #D3D3D3 !important; /* Light gray */
+        color: #333 !important;
+    }
+    .status-processing {
+        background-color: #ADD8E6 !important; /* Light blue */
+        color: #333 !important;
+    }
+    .status-shipped {
+        background-color: #D8BFD8 !important; /* Light purple */
+        color: #333 !important;
+    }
+    .status-delivered {
+        background-color: #90EE90 !important; /* Light green */
+        color: #333 !important;
+    }
+    .status-cancelled {
+        background-color: #FFB6C1 !important; /* Light red */
+        color: #333 !important;
     }
 </style>
