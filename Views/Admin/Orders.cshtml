@@ -27,29 +27,24 @@
             <tbody>
                 @foreach (var order in Model)
                 {
-                    var inferredStatus = "Pending";
-                    if (order.Items != null && order.Items.Any())
-                    {
-                        var firstStatus = order.Items.First().Status;
-                        inferredStatus = order.Items.All(i => i.Status == firstStatus) ? firstStatus.ToString() : "Mixed";
-                    }
-                    <tr>
+                    <tr data-order-id="@order.Id">
                         <td>@order.Id</td>
                         <td>@order.Items.FirstOrDefault()?.Title</td>
                         <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
                         <td>@order.TotalAmount.ToString("C")</td>
-                        <td>@inferredStatus</td>
+                        <td>@order.InferredStatus</td>
                         <td>
                             <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-primary">Details</a>
                             <div class="dropdown d-inline-block">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="statusDropdown_@order.Id" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Change Status
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle d-flex align-items-center gap-1" type="button" id="statusDropdown_@order.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-pencil-square"></i>
+                                    @order.InferredStatus
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="statusDropdown_@order.Id">
                                     @foreach (var status in Enum.GetValues(typeof(BookHive.Models.OrderStatus)))
                                     {
                                         <li>
-                                            <a class="dropdown-item change-status" href="#" data-order-id="@order.Id" data-status="@status">@status</a>
+                                            <a class="dropdown-item change-status @(status.ToString() == order.InferredStatus ? "active" : "")" href="#" data-order-id="@order.Id" data-status="@status">@status</a>
                                         </li>
                                     }
                                 </ul>
@@ -63,7 +58,6 @@
 </div>
 
 <style>
-    /* Container Styling */
     .container {
         background-color: #fff;
         border-radius: 10px;
@@ -71,7 +65,6 @@
         padding: 20px;
     }
 
-    /* Heading */
     h2 {
         color: #333;
         font-weight: 600;
@@ -79,7 +72,6 @@
         padding-bottom: 10px;
     }
 
-    /* Alert Styling */
     .alert-info {
         background-color: #E6E6FA;
         color: #333;
@@ -89,7 +81,6 @@
         text-align: center;
     }
 
-    /* Table Styling */
     .table {
         background-color: #E6E6FA;
         border-collapse: separate;
@@ -123,7 +114,6 @@
         color: #333;
     }
 
-    /* Button Styling */
     .btn-primary {
         background-color: #D8BFD8 !important;
         border-color: #D8BFD8 !important;
@@ -137,20 +127,18 @@
         border-color: #C71585 !important;
     }
 
-    .btn-secondary {
-        background-color: #7e69ab !important;
-        border-color: #7e69ab !important;
-        color: #fff !important;
+    .btn-outline-primary {
+        border-color: #D8BFD8 !important;
+        color: #D8BFD8 !important;
         border-radius: 5px;
         padding: 6px 12px;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
+        transition: all 0.3s ease;
     }
-    .btn-secondary:hover {
-        background-color: #6b5794 !important;
-        border-color: #6b5794 !important;
+    .btn-outline-primary:hover {
+        background-color: #D8BFD8 !important;
+        color: #fff !important;
     }
 
-    /* Dropdown Styling */
     .dropdown-menu {
         background-color: #E6E6FA;
         border: 1px solid #D8BFD8;
@@ -163,6 +151,10 @@
         transition: background-color 0.3s ease;
     }
     .dropdown-item:hover {
+        background-color: #D8BFD8;
+        color: #fff;
+    }
+    .dropdown-item.active {
         background-color: #D8BFD8;
         color: #fff;
     }
@@ -187,11 +179,21 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update the status cell in the table
-                        const row = document.querySelector(`tr td:first-child:not(:empty):where(:text(${orderId}))`).parentElement;
-                        const statusCell = row.querySelector('td:nth-child(5)');
-                        statusCell.textContent = status;
-                        alert('Order status updated successfully!');
+                        const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                        if (row) {
+                            const statusCell = row.querySelector('td:nth-child(5)');
+                            const dropdownButton = row.querySelector(`#statusDropdown_${orderId}`);
+                            statusCell.textContent = status;
+                            dropdownButton.innerHTML = `<i class="bi bi-pencil-square"></i> ${status}`;
+                            row.querySelectorAll('.dropdown-item').forEach(item => {
+                                item.classList.toggle('active', item.getAttribute('data-status') === status);
+                            });
+                            alert('Order status updated successfully!');
+                        } else {
+                            console.error('Row not found for order ID:', orderId);
+                            alert('Order status updated, but table could not be refreshed.');
+                            location.reload();
+                        }
                     } else {
                         alert('Error: ' + (data.message || 'Could not update order status.'));
                     }
