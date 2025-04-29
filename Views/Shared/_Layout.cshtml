@@ -40,13 +40,13 @@
                     </form>
 
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart"></i> Cart
+                            </a>
+                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Cart" asp-action="Index">
-                                    <i class="bi bi-cart"></i> Cart
-                                </a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Wishlist" asp-action="Index">
                                     <i class="bi bi-heart"></i> Wishlist
@@ -57,16 +57,10 @@
                                     <i class="bi bi-person"></i> @User.Identity.Name <i class="bi bi-chevron-down dropdown-icon"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Order" asp-action="History">User Orders</a>
-                                    </li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Order" asp-action="History">User Orders</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item logout-item" asp-controller="Account" asp-action="Logout">Logout</a>
-                                    </li>
+                                    <li><a class="dropdown-item logout-item" asp-controller="Account" asp-action="Logout">Logout</a></li>
                                 </ul>
                             </li>
                         }

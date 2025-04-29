@@ -15,44 +15,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Auth/Login";
-        options.LogoutPath = "/Auth/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-    });
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IBookRepository, BookRepository>(); 
-builder.Services.AddScoped<IBookService, BookService>(); 
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
-builder.Services.AddScoped<IWishlistService, WishlistService>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
-builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
-
-
-
-
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -70,6 +32,50 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+});
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\BookHive\DataProtectionKeys"))
+    .SetApplicationName("BookHive");
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 
@@ -90,19 +96,25 @@ DbInitializer.Seed(app);
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Auth/Error");
-    app.UseHsts();
+    app.UseExceptionHandler("/Home/Error");
 }
-
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
