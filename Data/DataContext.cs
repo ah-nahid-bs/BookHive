@@ -16,6 +16,7 @@ namespace BookHive.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -75,6 +76,20 @@ namespace BookHive.Data
                       .WithMany()
                       .HasForeignKey(w => w.BookId);
             });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                  entity.HasKey(r => r.Id);
+
+                  entity.HasOne(r => r.User)
+                        .WithMany(u => u.Reviews)
+                        .HasForeignKey(r => r.UserId);
+
+                  entity.HasOne(r => r.Book)
+                        .WithMany(b => b.Reviews)
+                        .HasForeignKey(r => r.BookId);
+            });
+            
         }
     }
 }

@@ -7,7 +7,9 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-md-5">
-            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm book-image" alt="@Model.Title" />
+            <div class="book-image-container">
+                <img src="@Model.ImageUrl" class="rounded shadow-sm book-image" alt="@Model.Title" />
+            </div>
         </div>
         <div class="col-md-7 book-details">
             <h2 class="book-title">@Model.Title</h2>
@@ -26,7 +28,103 @@
             </div>
         </div>
     </div>
+
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4" style="color: #7e69ab;">Customer Reviews</h3>
+            @if (Model.Reviews.Any())
+            {
+                <div class="reviews-list">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="review-card mb-3 p-3" style="background: linear-gradient(135deg, #f8f4ff, #e6e0ff); border-radius: 12px; box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong style="color: #3c2f5f;">@review.UserName</strong>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span class="@(i <= review.Rating ? "fas fa-star text-warning" : "far fa-star text-muted")"></span>
+                                        }
+                                    </div>
+                                </div>
+                                <small style="color: #6e59a5;">@review.CreatedAt.ToString("yyyy-MM-dd")</small>
+                            </div>
+                            <p class="mt-2" style="color: #3c2f5f;">@review.Comment</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="color: #6e59a5;">No reviews yet. Be the first to review this book!</p>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <p style="color: #6e59a5;">
+                        <a asp-controller="Account" asp-action="Login" style="color: #9b87f5; text-decoration: underline;">Log in</a> to add a review.
+                    </p>
+                }
+                else if (!ViewBag.CanReview)
+                {
+                    <p style="color: #6e59a5;">
+                        Purchase this book to add a review.
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                            <input type="hidden" name="bookId" value="@Model.Id" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-link p-0" style="color: #9b87f5; text-decoration: underline;">Add to Cart</button>
+                        </form>
+                    </p>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Add Review Form -->
+    @if (ViewBag.CanReview)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4" style="background: linear-gradient(135deg, #f8f4ff, #e6e0ff); border-radius: 12px; box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);">
+                    <h4 class="mb-3" style="color: #7e69ab;">Write a Review</h4>
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+                    <form asp-action="AddReview" asp-controller="Books" method="post">
+                        <input type="hidden" name="BookId" value="@Model.Id" />
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #7e69ab;">Rating <span class="text-danger">*</span></label>
+                            <select name="Rating" class="form-control" style="border-color: #9b87f5;" required>
+                                <option value="">Select rating</option>
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                                }
+                            </select>
+                            <span class="text-danger" asp-validation-for="@(new BookHive.ViewModels.ReviewViewModel().Rating)"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" style="color: #7e69ab;">Comment</label>
+                            <textarea name="Comment" class="form-control" rows="4" style="border-color: #9b87f5;" maxlength="500"></textarea>
+                            <span class="text-danger" asp-validation-for="@(new BookHive.ViewModels.ReviewViewModel().Comment)"></span>
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #9b87f5; color: #fff; border-radius: 10px;">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+}
 
 <style>
     :root {
@@ -35,21 +133,29 @@
         --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
     }
 
-    /* Book Image */
+    .book-image-container {
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .book-image {
-        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        width: 300px; /* Fixed width */
+        height: 450px; /* Fixed height */
+        object-fit: cover; /* Ensures image fills the space without distortion */
+        border: 1px solid rgba(155, 135, 245, 0.2);
         border-radius: 12px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .book-image:hover {
-        transform: scale(1.02); /* Slight zoom on hover */
-        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Lavender shadow */
+        transform: scale(1.02);
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3);
     }
 
-    /* Book Details Container */
     .book-details {
-        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching book cards */
+        background: linear-gradient(135deg, #ffffff, #f8f4ff);
         border: 1px solid rgba(155, 135, 245, 0.2);
         border-radius: 12px;
         padding: 2rem;
@@ -58,66 +164,59 @@
     }
 
     .book-details:hover {
-        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3); /* Deeper shadow on hover */
+        box-shadow: 0 8px 24px rgba(155, 135, 245, 0.3);
     }
 
-    /* Book Title */
     .book-title {
-        font-size: 1.75rem; /* Slightly larger than h2 default */
+        font-size: 1.75rem;
         font-weight: 600;
-        color: #3c2f5f; /* Dark purple, matching Index.cshtml */
+        color: #3c2f5f;
         margin-bottom: 0.75rem;
     }
 
-    /* Author Name */
     .author-name {
         font-size: 1rem;
-        color: #6e59a5; /* Lavender text, matching Index.cshtml */
+        color: #6e59a5;
         margin-bottom: 0.75rem;
     }
 
-    /* Category and Publish Date */
     .category-name,
     .publish-date {
-        color: #6e59a5; /* Lavender text */
+        color: #6e59a5;
         font-weight: 500;
     }
 
-    /* Description */
     .description {
-        color: #3c2f5f; /* Dark purple for readability */
+        color: #3c2f5f;
         font-size: 1rem;
         line-height: 1.6;
         margin-bottom: 1rem;
     }
 
-    /* Price */
     .current-price {
         font-size: 1.5rem;
         font-weight: 600;
-        color: #9b87f5; /* Lavender primary, matching Index.cshtml */
+        color: #9b87f5;
         margin-bottom: 1rem;
     }
 
-    /* Quantity Input */
     .quantity-input {
-        border: 1px solid #D8BFD8; /* Lavender border, matching _Layout.cshtml */
+        border: 1px solid #9b87f5;
         border-radius: 8px;
         background-color: #fff;
         color: #333;
-        width: 80px; /* Fixed width for consistency */
+        width: 80px;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .quantity-input:focus {
-        border-color: #C71585; /* Darker lavender/pink on focus, matching _Layout.cshtml */
-        box-shadow: 0 0 5px rgba(199, 21, 133, 0.3);
+        border-color: #9b87f5;
+        box-shadow: 0 0 5px rgba(155, 135, 245, 0.3);
         outline: none;
     }
 
-    /* Add to Cart Button */
     .btn-add-to-cart {
-        background: #9b87f5; /* Lavender primary */
+        background: #9b87f5;
         color: white;
         border: none;
         border-radius: 8px;
@@ -128,7 +227,21 @@
     }
 
     .btn-add-to-cart:hover {
-        background: #7e69ab; /* Lavender dark for hover */
+        background: #7e69ab;
         color: white;
+    }
+
+    .review-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(155, 135, 245, 0.2);
+    }
+
+    .star-rating .fa-star {
+        font-size: 0.9rem;
+        margin-right: 2px;
     }
 </style>

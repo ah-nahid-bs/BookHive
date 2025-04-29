@@ -6,6 +6,7 @@ using BookHive.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookHive.Repositories;
+
 public class BookRepository : IBookRepository
 {
     private readonly DataContext _context;
@@ -22,6 +23,7 @@ public class BookRepository : IBookRepository
                                 .Take(count)
                                 .ToListAsync();
     }
+
     public async Task<IEnumerable<Book>> GetNewArrivals()
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
@@ -31,6 +33,7 @@ public class BookRepository : IBookRepository
             .Take(10)
             .ToListAsync();
     }
+
     public async Task<IEnumerable<Book>> GetBestSellersAsync(int minimumSold)
     {
         return await _context.Books
@@ -38,6 +41,7 @@ public class BookRepository : IBookRepository
             .OrderByDescending(b => b.TotalSold)
             .ToListAsync();
     }
+
     public async Task<IEnumerable<Book>> GetTrendingBooksThisMonthAsync(int topCount)
     {
         var now = DateTime.Now;
@@ -74,18 +78,23 @@ public class BookRepository : IBookRepository
             })
             .ToListAsync();
     }
+
     public async Task<List<Book>> GetAllAsync() => await _context.Books.Include(b => b.Category).ToListAsync();
+
     public async Task<Book?> GetByIdAsync(int id) => await _context.Books.Include(b => b.Category).FirstOrDefaultAsync(x => x.Id == id);
+
     public async Task AddAsync(Book book)
     {
         _context.Books.Add(book);
         await _context.SaveChangesAsync();
     }
+
     public async Task UpdateAsync(Book book)
     {
         _context.Books.Update(book);
         await _context.SaveChangesAsync();
     }
+
     public async Task DeleteAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);
@@ -95,6 +104,7 @@ public class BookRepository : IBookRepository
             await _context.SaveChangesAsync();
         }
     }
+
     public async Task<IEnumerable<Book>> GetBooksByCategoryAsync(string categoryName)
     {
         return await _context.Books
@@ -102,12 +112,14 @@ public class BookRepository : IBookRepository
             .Where(b => b.Category != null && b.Category.Name == categoryName)
             .ToListAsync();
     }
+
     public async Task<Book?> GetBookByIdAsync(int id)
     {
         return await _context.Books
             .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
+
     public async Task<(IEnumerable<Book>, int)> SearchBooksAsync(string query, int page, int pageSize)
     {
         IQueryable<Book> queryable = _context.Books.Include(b => b.Category);
@@ -130,5 +142,4 @@ public class BookRepository : IBookRepository
 
         return (books, totalCount);
     }
-
 }
