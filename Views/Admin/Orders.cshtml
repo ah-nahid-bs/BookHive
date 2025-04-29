@@ -20,19 +20,40 @@
                     <th>User</th>
                     <th>Date</th>
                     <th>Total</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var order in Model)
                 {
+                    var inferredStatus = "Pending";
+                    if (order.Items != null && order.Items.Any())
+                    {
+                        var firstStatus = order.Items.First().Status;
+                        inferredStatus = order.Items.All(i => i.Status == firstStatus) ? firstStatus.ToString() : "Mixed";
+                    }
                     <tr>
                         <td>@order.Id</td>
                         <td>@order.Items.FirstOrDefault()?.Title</td>
                         <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
                         <td>@order.TotalAmount.ToString("C")</td>
+                        <td>@inferredStatus</td>
                         <td>
                             <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-primary">Details</a>
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="statusDropdown_@order.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Change Status
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="statusDropdown_@order.Id">
+                                    @foreach (var status in Enum.GetValues(typeof(BookHive.Models.OrderStatus)))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item change-status" href="#" data-order-id="@order.Id" data-status="@status">@status</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -44,25 +65,25 @@
 <style>
     /* Container Styling */
     .container {
-        background-color: #fff; /* White background for contrast */
+        background-color: #fff;
         border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         padding: 20px;
     }
 
     /* Heading */
     h2 {
-        color: #333; /* Dark text for readability */
+        color: #333;
         font-weight: 600;
-        border-bottom: 2px solid #D8BFD8; /* Lavender accent underline */
+        border-bottom: 2px solid #D8BFD8;
         padding-bottom: 10px;
     }
 
     /* Alert Styling */
     .alert-info {
-        background-color: #E6E6FA; /* Light lavender background */
-        color: #333; /* Dark text */
-        border: 1px solid #D8BFD8; /* Lavender border */
+        background-color: #E6E6FA;
+        color: #333;
+        border: 1px solid #D8BFD8;
         border-radius: 5px;
         padding: 15px;
         text-align: center;
@@ -70,22 +91,22 @@
 
     /* Table Styling */
     .table {
-        background-color: #E6E6FA; /* Light lavender background */
+        background-color: #E6E6FA;
         border-collapse: separate;
         border-spacing: 0;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin: 20px 0;
     }
     .table thead {
-        background-color: #D8BFD8; /* Darker lavender for header */
-        color: #333; /* Dark text */
+        background-color: #D8BFD8;
+        color: #333;
     }
     .table th, .table td {
-        padding: 15px; /* Spacious padding */
+        padding: 15px;
         text-align: left;
-        border-bottom: 1px solid #ddd; /* Light border between rows */
+        border-bottom: 1px solid #ddd;
     }
     .table th {
         font-weight: 600;
@@ -93,18 +114,18 @@
         letter-spacing: 0.05em;
     }
     .table tbody tr {
-        transition: background-color 0.3s ease; /* Smooth hover effect */
+        transition: background-color 0.3s ease;
     }
     .table tbody tr:hover {
-        background-color: #f0e6fa; /* Slightly darker lavender on hover */
+        background-color: #f0e6fa;
     }
     .table td {
-        color: #333; /* Dark text */
+        color: #333;
     }
 
     /* Button Styling */
     .btn-primary {
-        background-color: #D8BFD8 !important; /* Lavender button */
+        background-color: #D8BFD8 !important;
         border-color: #D8BFD8 !important;
         color: #fff !important;
         border-radius: 5px;
@@ -112,7 +133,74 @@
         transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     .btn-primary:hover {
-        background-color: #C71585 !important; /* Darker lavender/pink on hover */
+        background-color: #C71585 !important;
         border-color: #C71585 !important;
     }
+
+    .btn-secondary {
+        background-color: #7e69ab !important;
+        border-color: #7e69ab !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #6b5794 !important;
+        border-color: #6b5794 !important;
+    }
+
+    /* Dropdown Styling */
+    .dropdown-menu {
+        background-color: #E6E6FA;
+        border: 1px solid #D8BFD8;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item {
+        color: #333;
+        padding: 8px 15px;
+        transition: background-color 0.3s ease;
+    }
+    .dropdown-item:hover {
+        background-color: #D8BFD8;
+        color: #fff;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.change-status').forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                const orderId = this.getAttribute('data-order-id');
+                const status = this.getAttribute('data-status');
+
+                fetch('/Order/UpdateOrderStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ orderId: orderId, status: status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the status cell in the table
+                        const row = document.querySelector(`tr td:first-child:not(:empty):where(:text(${orderId}))`).parentElement;
+                        const statusCell = row.querySelector('td:nth-child(5)');
+                        statusCell.textContent = status;
+                        alert('Order status updated successfully!');
+                    } else {
+                        alert('Error: ' + (data.message || 'Could not update order status.'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the order status.');
+                });
+            });
+        });
+    });
+</script>

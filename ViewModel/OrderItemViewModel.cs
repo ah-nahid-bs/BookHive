@@ -1,3 +1,5 @@
+using BookHive.Models;
+
 namespace BookHive.ViewModels;
 public class OrderItemViewModel
 {
@@ -8,4 +10,5 @@ public class OrderItemViewModel
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public decimal Total => Price * Quantity;
+    public OrderStatus Status { get; set; }
 }
