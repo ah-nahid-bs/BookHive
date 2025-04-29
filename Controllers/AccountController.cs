@@ -9,12 +9,14 @@ namespace BookHive.Controllers;
 public class AccountController : Controller
 {
     private readonly IAccountService _accountService;
+    private readonly IUserProfileService _userProfileService;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountController(IAccountService accountService, SignInManager<ApplicationUser> signInManager)
+    public AccountController(IAccountService accountService, SignInManager<ApplicationUser> signInManager,IUserProfileService userProfileService)
     {
         _accountService = accountService;
         _signInManager = signInManager;
+        _userProfileService = userProfileService;
     }
 
     [HttpGet]
@@ -72,4 +74,37 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
+      [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var model = await _userProfileService.GetUserProfileAsync(userId);
+            if (model == null)
+                return NotFound();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateProfile()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var model = await _userProfileService.GetUserProfileAsync(userId);
+            if (model == null)
+                return NotFound();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(UserProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            await _userProfileService.UpdateUserProfileAsync(model);
+            TempData["SuccessMessage"] = "Profile updated successfully!";
+            return RedirectToAction("Profile");
+        }
 }

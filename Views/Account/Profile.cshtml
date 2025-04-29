@@ -1,0 +1,36 @@
+@model BookHive.ViewModels.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm" style="background: linear-gradient(135deg, #f8f4ff, #e6e0ff); border-radius: 15px;">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4" style="color: #7e69ab;">User Profile</h2>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #7e69ab;">Name</label>
+                        <p class="form-control" style="background: #fff; border-color: #9b87f5;">@Model.Name</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #7e69ab;">Email</label>
+                        <p class="form-control" style="background: #fff; border-color: #9b87f5;">@Model.Email</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #7e69ab;">Phone Number</label>
+                        <p class="form-control" style="background: #fff; border-color: #9b87f5;">@Model.PhoneNumber</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #7e69ab;">Address</label>
+                        <p class="form-control" style="background: #fff; border-color: #9b87f5;">@Model.Address</p>
+                    </div>
+                    <div class="text-center">
+                        <a asp-action="UpdateProfile" class="btn" style="background-color: #9b87f5; color: #fff; border-radius: 10px; padding: 10px 20px;">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
