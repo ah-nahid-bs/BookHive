@@ -3,78 +3,91 @@ using BookHive.Models;
 using BookHive.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
-namespace BookHive.Controllers;
-
-public class AccountController : Controller
+namespace BookHive.Controllers
 {
-    private readonly IAccountService _accountService;
-    private readonly IUserProfileService _userProfileService;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    public class AccountController : Controller
+    {
+        private readonly IAccountService _accountService;
+        private readonly IUserProfileService _userProfileService;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ICartService _cartService;
 
-    public AccountController(IAccountService accountService, SignInManager<ApplicationUser> signInManager,IUserProfileService userProfileService)
-    {
-        _accountService = accountService;
-        _signInManager = signInManager;
-        _userProfileService = userProfileService;
-    }
+        public AccountController(IAccountService accountService, SignInManager<ApplicationUser> signInManager, IUserProfileService userProfileService, ICartService cartService)
+        {
+            _accountService = accountService;
+            _signInManager = signInManager;
+            _userProfileService = userProfileService;
+            _cartService = cartService;
+        }
 
-    [HttpGet]
-    public IActionResult SignUp()
-    {
-        return View();
-    }
-    [HttpGet]
-    public IActionResult Login()
-    {
-        return View();
-    }
+        [HttpGet]
+        public IActionResult SignUp()
+        {
+            return View();
+        }
 
-    [HttpPost]
-    public async Task<IActionResult> SignUp(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid){
-            Console.WriteLine("Model state is invalid.");
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignUp(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                System.Console.WriteLine("Model state is invalid.");
+                return View(model);
+            }
+
+            var result = await _accountService.RegisterAsync(model);
+            System.Console.WriteLine($"Registration result: {result}");
+            if (result)
+            {
+                System.Console.WriteLine("Registration successful.");
+                return RedirectToAction("Index", "Home");
+            }
+            System.Console.WriteLine("Registration failed.");
+            ModelState.AddModelError("", "Registration failed.");
             return View(model);
         }
 
-        var result = await _accountService.RegisterAsync(model);
-        Console.WriteLine($"Registration result: {result}");
-        if (result)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            Console.WriteLine("Registration successful.");
-            return RedirectToAction("Index", "Home");
-        }
-        Console.WriteLine("Registration failed.");
-        ModelState.AddModelError("", "Registration failed.");
-        return View(model);
-    }
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result = await _accountService.LoginAsync(model);
+            if (result)
+            {
+                System.Console.WriteLine("Login successful.");
+                var user = await _signInManager.UserManager.FindByEmailAsync(model.UsernameOrEmail);
+                if (user != null)
+                {
+                    await _cartService.MergeSessionCartAsync(user.Id);
+                }
+                return RedirectToAction("Index", "Home");
+            }
+
+            System.Console.WriteLine("Login failed.");
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View(model);
         }
 
-        var result = await _accountService.LoginAsync(model);
-        if (result)
+        public async Task<IActionResult> Logout()
         {
-            Console.WriteLine("Login successful.");
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
-        Console.WriteLine("Login failed. with error");
-        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-        return View(model);
-    }
-    public async Task<IActionResult> Logout()
-    {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
-    }
-      [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Profile()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -107,4 +120,5 @@ public class AccountController : Controller
             TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction("Profile");
         }
+    }
 }

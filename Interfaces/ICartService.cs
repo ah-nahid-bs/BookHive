@@ -3,12 +3,12 @@ using BookHive.ViewModels;
 namespace BookHive.Interfaces;
 public interface ICartService
 {
-    Task<List<CartItemViewModel>> GetCartItemsAsync(string userId);
-    Task AddToCartAsync(string userId, int bookId, int quantity);
-    Task RemoveFromCartAsync(int cartItemId);
-    Task ClearCartAsync(string userId);
+    Task<CartViewModel> GetCartAsync();
+    Task AddToCartAsync(int bookId, int quantity);
+    Task<bool> UpdateCartItemAsync(int cartItemId, int quantity);
+    Task<bool> RemoveCartItemAsync(int cartItemId);
+    Task ClearCartAsync();
+    Task MergeSessionCartAsync(string userId);
     Task<decimal> GetCartTotalAsync(string userId);
-    Task<bool> UpdateCartItemAsync(string userId, int cartItemId, int quantity);
-    Task<bool> RemoveCartItemAsync(string userId, int cartItemId);
-
+    Task<List<CartItemViewModel>> GetCartItemsAsync(string userId);
 }
