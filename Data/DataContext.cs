@@ -1,6 +1,6 @@
+using BookHive.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using BookHive.Models;
 
 namespace BookHive.Data
 {
@@ -36,7 +36,7 @@ namespace BookHive.Data
                       .IsRequired();
 
                 entity.HasOne(o => o.User)
-                      .WithMany() 
+                      .WithMany()
                       .HasForeignKey(o => o.UserId)
                       .OnDelete(DeleteBehavior.NoAction);
 
@@ -79,17 +79,16 @@ namespace BookHive.Data
 
             modelBuilder.Entity<Review>(entity =>
             {
-                  entity.HasKey(r => r.Id);
+                entity.HasKey(r => r.Id);
 
-                  entity.HasOne(r => r.User)
-                        .WithMany(u => u.Reviews)
-                        .HasForeignKey(r => r.UserId);
+                entity.HasOne(r => r.User)
+                      .WithMany(u => u.Reviews)
+                      .HasForeignKey(r => r.UserId);
 
-                  entity.HasOne(r => r.Book)
-                        .WithMany(b => b.Reviews)
-                        .HasForeignKey(r => r.BookId);
+                entity.HasOne(r => r.Book)
+                      .WithMany(b => b.Reviews)
+                      .HasForeignKey(r => r.BookId);
             });
-            
         }
     }
 }
