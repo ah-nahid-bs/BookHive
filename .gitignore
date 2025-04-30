@@ -484,6 +484,7 @@ $RECYCLE.BIN/
 *.swp
 
 # Ignore appsettings.json
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 appsettings.*.json
