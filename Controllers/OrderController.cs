@@ -1,5 +1,6 @@
 using BookHive.Data;
 using BookHive.DTOs;
+using BookHive.Extensions;
 using BookHive.Interfaces;
 using BookHive.Models;
 using BookHive.ViewModels;
@@ -225,8 +226,13 @@ public class OrderController : Controller
     }
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusRequest request)
+    public async Task<IActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusDto request)
     {
+        if (request == null || request.OrderId <= 0 || string.IsNullOrWhiteSpace(request.Status))
+        {
+            return Json(new { success = false, message = "Invalid order ID or status." });
+        }
+
         var order = await _orderService.GetOrderDetailsAsync(request.OrderId);
         if (order == null)
         {
@@ -238,7 +244,23 @@ public class OrderController : Controller
             return Json(new { success = false, message = "Invalid status." });
         }
 
-        await _orderService.UpdateOrderStatusAsync(request.OrderId, newStatus);
-        return Json(new { success = true });
+        try
+        {
+            foreach (var item in order.Items)
+            {
+                var currentStatus = item.Status;
+                var validNextStatuses = OrderStatusExtensions.GetValidNextStatuses(currentStatus);
+                if (!validNextStatuses.Contains(newStatus))
+                {
+                    return Json(new { success = false, message = $"Cannot change status from {currentStatus} to {newStatus} for item with Book ID {item.BookId}." });
+                }
+            }
+            await _orderService.UpdateOrderStatusAsync(request.OrderId, newStatus);
+            return Json(new { success = true, message = "Order status updated successfully." });
+        }
+        catch 
+        {
+            return Json(new { success = false, message = "An error occurred while updating the order status." });
+        }
     }
 }
