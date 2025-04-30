@@ -18,6 +18,7 @@ namespace BookHive.Data
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<VerificationCode> VerificationCodes { get; set; }
+        public DbSet<UserInterest> UserInterests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

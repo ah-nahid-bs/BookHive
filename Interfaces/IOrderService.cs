@@ -10,4 +10,8 @@ public interface IOrderService
     Task<List<OrderViewModel>> GetAllOrdersAsync(); // For admin
     Task<OrderViewModel> GetOrderDetailsAsync(int orderId);
     Task UpdateOrderStatusAsync(int orderId, OrderStatus status);
+
+    Task<decimal> GetTotalSalesRevenueAsync();
+    Task<decimal> GetMonthlySalesRevenueAsync(int year, int month);
+    Task<int> GetMonthlyOrderCountAsync(int year, int month);
 }
