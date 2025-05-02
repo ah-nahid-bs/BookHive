@@ -135,4 +135,22 @@ public class OrderService : IOrderService
 
         await _context.SaveChangesAsync();
     }
+    public async Task<decimal> GetTotalSalesRevenueAsync()
+    {
+        return await _context.Orders.SumAsync(o => o.TotalAmount);
+    }
+
+    public async Task<decimal> GetMonthlySalesRevenueAsync(int year, int month)
+    {
+        return await _context.Orders
+            .Where(o => o.OrderDate.Year == year && o.OrderDate.Month == month)
+            .SumAsync(o => o.TotalAmount);
+    }
+
+    public async Task<int> GetMonthlyOrderCountAsync(int year, int month)
+    {
+        return await _context.Orders
+            .Where(o => o.OrderDate.Year == year && o.OrderDate.Month == month)
+            .CountAsync();
+    }
 }

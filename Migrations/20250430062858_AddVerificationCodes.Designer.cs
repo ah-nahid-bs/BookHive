@@ -4,6 +4,7 @@ using BookHive.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookHive.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250430062858_AddVerificationCodes")]
+    partial class AddVerificationCodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,37 +307,6 @@ namespace BookHive.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("BookHive.Models.UserInterest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AuthorName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InterestType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserInterests");
-                });
-
             modelBuilder.Entity("BookHive.Models.VerificationCode", b =>
                 {
                     b.Property<int>("Id")
@@ -611,23 +583,6 @@ namespace BookHive.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookHive.Models.UserInterest", b =>
-                {
-                    b.HasOne("BookHive.Models.Category", "Category")
-                        .WithMany("UserInterests")
-                        .HasForeignKey("CategoryId");
-
-                    b.HasOne("BookHive.Models.ApplicationUser", "User")
-                        .WithMany("UserInterests")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BookHive.Models.VerificationCode", b =>
                 {
                     b.HasOne("BookHive.Models.ApplicationUser", "User")
@@ -717,8 +672,6 @@ namespace BookHive.Migrations
 
                     b.Navigation("Reviews");
 
-                    b.Navigation("UserInterests");
-
                     b.Navigation("WishlistItems");
                 });
 
@@ -735,8 +688,6 @@ namespace BookHive.Migrations
             modelBuilder.Entity("BookHive.Models.Category", b =>
                 {
                     b.Navigation("Books");
-
-                    b.Navigation("UserInterests");
                 });
 
             modelBuilder.Entity("BookHive.Models.Order", b =>

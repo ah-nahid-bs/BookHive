@@ -1,0 +1,191 @@
+@model BookHive.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <!-- Sales Dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Sales Overview</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Total Revenue:</strong> @Model.TotalRevenue.ToString("C")</p>
+                    <p><strong>This Month's Revenue:</strong> @Model.MonthlyRevenue.ToString("C")</p>
+                    <p><strong>This Month's Orders:</strong> @Model.MonthlyOrderCount</p>
+                    <canvas id="salesChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Interests -->
+    <h3 class="mb-3">User Interests</h3>
+    @if (!Model.Users.Any())
+    {
+        <div class="alert alert-info">No users found.</div>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>
+                            <a asp-action="UserCategoryInterests" asp-route-userId="@user.Id" class="btn btn-sm btn-primary">View Category Interests</a>
+                            <a asp-action="UserAuthorInterests" asp-route-userId="@user.Id" class="btn btn-sm btn-outline-primary">View Author Interests</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<style>
+    .container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    h2, h3 {
+        color: #333;
+        font-weight: 600;
+        border-bottom: 2px solid #D8BFD8;
+        padding-bottom: 10px;
+    }
+
+    .alert-info {
+        background-color: #E6E6FA;
+        color: #333;
+        border: 1px solid #D8BFD8;
+        border-radius: 5px;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .table {
+        background-color: #E6E6FA;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+    }
+
+    .table thead {
+        background-color: #D8BFD8;
+        color: #333;
+    }
+
+    .table th, .table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f0e6fa;
+    }
+
+    .btn-primary {
+        background-color: #D8BFD8 !important;
+        border-color: #D8BFD8 !important;
+        color: #fff !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #C71585 !important;
+        border-color: #C71585 !important;
+    }
+
+    .btn-outline-primary {
+        border-color: #D8BFD8 !important;
+        color: #D8BFD8 !important;
+        border-radius: 5px;
+        padding: 6px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #D8BFD8 !important;
+        color: #fff !important;
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+        background-color: #E6E6FA;
+    }
+
+    .card-header {
+        background-color: #D8BFD8;
+        border-radius: 8px 8px 0 0;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Revenue', 'This Month'],
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: [@Model.TotalRevenue, @Model.MonthlyRevenue],
+                    backgroundColor: ['#D8BFD8', '#C71585'],
+                    borderColor: ['#D8BFD8', '#C71585'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount ($)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>

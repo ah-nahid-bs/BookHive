@@ -1,4 +1,5 @@
 @model BookHive.ViewModels.CheckoutViewModel
+@using BookHive.ViewModels
 
 @{
     ViewData["Title"] = "Checkout";
@@ -7,9 +8,33 @@
 <div class="container py-4">
     <h2 class="mb-4 section-heading">Checkout</h2>
 
-    @if (!Model.CartItems.Any())
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (!Model.IsEmailVerified)
+    {
+        <div class="alert alert-warning">
+            <p>Your email is not verified. Please verify your email to place an order.</p>
+            <button id="sendVerificationEmail" class="btn btn-verify-email mb-2">Send Verification Code</button>
+            <form id="verifyCodeForm" class="verify-code-form">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="verificationCode" name="Code" placeholder="Enter 6-digit code" maxlength="6" pattern="\d{6}" title="Please enter exactly 6 digits (e.g., 123456)" required>
+                    <button type="submit" class="btn btn-verify-code">Verify Code</button>
+                </div>
+                <div id="codeError" class="text-danger" style="display: none;"></div>
+            </form>
+        </div>
+    }
+    else if (!Model.CartItems.Any())
     {
         <div class="alert alert-info no-cart-items">Your cart is empty.</div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Continue Shopping</a>
     }
     else
     {
@@ -48,133 +73,130 @@
             <a asp-controller="Cart" asp-action="Index" class="btn btn-back-to-cart">Back to Cart</a>
         </form>
     }
+
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="checkoutToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Checkout</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
 </div>
 
 <style>
     :root {
-        --lavender-primary: hsl(270, 50%, 70%); /* #9b87f5 */
-        --lavender-light: hsl(270, 30%, 90%); /* #f8f4ff */
-        --lavender-dark: hsl(270, 40%, 40%); /* #7e69ab */
+        --lavender-primary: hsl(270, 50%, 70%);
+        --lavender-light: hsl(270, 30%, 90%);
+        --lavender-dark: hsl(270, 40%, 40%);
     }
 
-    /* Section Heading */
     .section-heading {
-        color: #3c2f5f; /* Dark purple, matching other pages */
+        color: #3c2f5f;
         font-weight: 600;
         font-size: 1.75rem;
     }
 
-    /* No Cart Items Alert */
     .no-cart-items {
-        background: #f8f4ff; /* Light lavender background */
-        border: 1px solid #9b87f5; /* Lavender border */
-        color: #6e59a5; /* Lavender text */
+        background: var(--lavender-light);
+        border: 1px solid var(--lavender-primary);
+        color: #6e59a5;
         border-radius: 8px;
         padding: 1rem;
         font-size: 1rem;
         text-align: center;
     }
 
-    /* Table Container */
     .table-responsive {
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1); /* Subtle lavender shadow */
+        box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
     }
 
-    /* Checkout Table */
     .checkout-table {
-        background: #fff; /* White background for table */
-        border: none; /* Remove default border */
-        margin-bottom: 0; /* Remove default margin */
+        background: #fff;
+        border: none;
+        margin-bottom: 0;
     }
 
-    /* Table Header */
     .table-header {
-        background: linear-gradient(135deg, #ffffff, #f8f4ff); /* Gradient matching other elements */
-        border-bottom: 2px solid #9b87f5; /* Lavender border */
+        background: linear-gradient(135deg, #ffffff, var(--lavender-light));
+        border-bottom: 2px solid var(--lavender-primary);
     }
 
     .table-header th {
-        color: #3c2f5f; /* Dark purple */
+        color: #3c2f5f;
         font-weight: 600;
         padding: 1rem;
         font-size: 1rem;
         text-align: center;
     }
 
-    /* Table Rows */
     .cart-item {
         background: #fff;
         transition: background-color 0.3s ease;
     }
 
     .cart-item:hover {
-        background: #f8f4ff; /* Light lavender on hover */
+        background: var(--lavender-light);
     }
 
     .cart-item td {
         vertical-align: middle;
         padding: 1rem;
         text-align: center;
-        border-color: rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border-color: rgba(155, 135, 245, 0.2);
     }
 
-    /* Book Title */
     .book-title {
-        color: #3c2f5f; /* Dark purple */
+        color: #3c2f5f;
         font-weight: 500;
         font-size: 1rem;
     }
 
-    /* Cart Image */
     .cart-image {
         width: 60px;
         height: 90px;
         object-fit: cover;
         border-radius: 8px;
-        border: 1px solid rgba(155, 135, 245, 0.2); /* Light lavender border */
+        border: 1px solid rgba(155, 135, 245, 0.2);
     }
 
-    /* Price and Total */
     .price,
     .total {
-        color: #9b87f5; /* Lavender primary */
+        color: var(--lavender-primary);
         font-weight: 600;
         font-size: 1rem;
     }
 
-    /* Quantity */
     .quantity {
-        color: #6e59a5; /* Lavender text */
+        color: #6e59a5;
         font-weight: 500;
     }
 
-    /* Checkout Footer */
     .checkout-footer {
         padding: 1rem;
-        background: #f8f4ff; /* Light lavender background */
+        background: var(--lavender-light);
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(155, 135, 245, 0.1);
     }
 
-    /* Checkout Total */
     .checkout-total {
-        color: #3c2f5f; /* Dark purple */
+        color: #3c2f5f;
         font-weight: 600;
         font-size: 1.5rem;
         margin-bottom: 0;
     }
 
-    /* Checkout Actions */
     .checkout-actions {
         display: flex;
         gap: 1rem;
     }
 
-    /* Place Order Button */
     .btn-place-order {
-        background: #9b87f5; /* Lavender primary */
+        background: var(--lavender-primary);
         color: white;
         border: none;
         border-radius: 8px;
@@ -185,12 +207,11 @@
     }
 
     .btn-place-order:hover {
-        background: #7e69ab; /* Lavender dark for hover */
+        background: var(--lavender-dark);
     }
 
-    /* Back to Cart Button */
     .btn-back-to-cart {
-        background: #6e59a5; /* Lavender secondary */
+        background: #6e59a5;
         color: white;
         border: none;
         border-radius: 8px;
@@ -201,6 +222,172 @@
     }
 
     .btn-back-to-cart:hover {
-        background: #5a4a87; /* Darker lavender for hover */
+        background: #5a4a87;
+    }
+
+    .btn-verify-email {
+        background: #f1c40f;
+        color: #3c2f5f;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-verify-email:hover {
+        background: #d4ac0d;
+    }
+
+    .btn-verify-code {
+        background: var(--lavender-primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-verify-code:hover {
+        background: var(--lavender-dark);
+    }
+
+    .verify-code-form {
+        max-width: 300px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid var(--lavender-primary);
+    }
+
+    .form-control:invalid {
+        border-color: #dc3545;
+    }
+
+    .toast {
+        background: var(--lavender-light);
+        border: 1px solid var(--lavender-primary);
+    }
+
+    .toast-header {
+        background: var(--lavender-primary);
+        color: white;
     }
 </style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const verifyButton = document.getElementById('sendVerificationEmail');
+            const verifyCodeForm = document.getElementById('verifyCodeForm');
+            const codeInput = document.getElementById('verificationCode');
+            const codeError = document.getElementById('codeError');
+
+            console.log('IsEmailVerified:', @Model.IsEmailVerified.ToString().ToLower()); // Debug log
+
+            if (verifyButton) {
+                verifyButton.addEventListener('click', function () {
+                    console.log('Sending verification email'); // Debug log
+                    verifyButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+                    fetch('/Order/SendVerificationEmail', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        console.log('SendVerificationEmail response status:', response.status); // Debug log
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('SendVerificationEmail response data:', data); // Debug log
+                        verifyButton.innerHTML = 'Send Verification Code';
+                        const toast = new bootstrap.Toast(document.getElementById('checkoutToast'));
+                        const toastBody = document.querySelector('#checkoutToast .toast-body');
+                        toastBody.textContent = data.message;
+                        toast.show();
+                    })
+                    .catch(error => {
+                        console.error('SendVerificationEmail error:', error);
+                        verifyButton.innerHTML = 'Send Verification Code';
+                        const toast = new bootstrap.Toast(document.getElementById('checkoutToast'));
+                        document.querySelector('#checkoutToast .toast-body').textContent = 'Failed to send verification code. Please check your network or contact support.';
+                        toast.show();
+                    });
+                });
+            }
+
+            if (verifyCodeForm) {
+                verifyCodeForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    codeError.style.display = 'none';
+                    const code = codeInput.value.trim();
+                    console.log('Submitting code:', code); // Debug log
+                    if (!/^\d{6}$/.test(code)) {
+                        codeError.textContent = 'Please enter exactly 6 digits (e.g., 123456).';
+                        codeError.style.display = 'block';
+                        codeInput.focus();
+                        return;
+                    }
+
+                    codeInput.disabled = true;
+                    verifyCodeForm.querySelector('button[type="submit"]').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Verifying...';
+
+                    const formData = new FormData();
+                    formData.append('Code', code);
+
+                    fetch('/Order/VerifyCode', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        console.log('VerifyCode response status:', response.status); // Debug log
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('VerifyCode response data:', data); // Debug log
+                        codeInput.disabled = false;
+                        verifyCodeForm.querySelector('button[type="submit"]').innerHTML = 'Verify Code';
+                        const toast = new bootstrap.Toast(document.getElementById('checkoutToast'));
+                        const toastBody = document.querySelector('#checkoutToast .toast-body');
+                        toastBody.textContent = data.message;
+                        toast.show();
+                        if (data.success) {
+                            console.log('Verification successful, reloading page'); // Debug log
+                            // Force reload with cache bypass
+                            setTimeout(() => {
+                                window.location.href = '/Order/Checkout?t=' + new Date().getTime();
+                            }, 2000);
+                        } else {
+                            codeError.textContent = data.message;
+                            codeError.style.display = 'block';
+                            codeInput.focus();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('VerifyCode error:', error);
+                        codeInput.disabled = false;
+                        verifyCodeForm.querySelector('button[type="submit"]').innerHTML = 'Verify Code';
+                        const toast = new bootstrap.Toast(document.getElementById('checkoutToast'));
+                        document.querySelector('#checkoutToast .toast-body').textContent = 'Failed to verify code. Please check your network or contact support.';
+                        toast.show();
+                    });
+                });
+
+                // Clear error on input
+                codeInput.addEventListener('input', function () {
+                    codeError.style.display = 'none';
+                    codeInput.classList.remove('is-invalid');
+                });
+            }
+        });
+    </script>
+}

@@ -13,12 +13,64 @@ public class AdminController : Controller
     private readonly IAdminService _adminService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IOrderService _orderService;
+    private readonly IUserService _userService;
 
-    public AdminController(IAdminService adminService, UserManager<ApplicationUser> userManager, IOrderService orderService)
+    public AdminController(IAdminService adminService, UserManager<ApplicationUser> userManager, IOrderService orderService, IUserService userService)
     {
         _adminService = adminService;
         _userManager = userManager;
         _orderService = orderService;
+        _userService = userService;
+    }
+    public async Task<IActionResult> Reports()
+    {
+        var totalRevenue = await _orderService.GetTotalSalesRevenueAsync();
+        var currentMonth = DateTime.Now;
+        var monthlyRevenue = await _orderService.GetMonthlySalesRevenueAsync(currentMonth.Year, currentMonth.Month);
+        var monthlyOrders = await _orderService.GetMonthlyOrderCountAsync(currentMonth.Year, currentMonth.Month);
+        var users = await _userService.GetAllUsersAsync();
+
+        var viewModel = new AdminDashboardViewModel
+        {
+            TotalRevenue = totalRevenue,
+            MonthlyRevenue = monthlyRevenue,
+            MonthlyOrderCount = monthlyOrders,
+            Users = users
+        };
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> UserCategoryInterests(string userId)
+    {
+        var interests = await _userService.GetUserCategoryInterestsAsync(userId);
+        var user = await _userService.GetAllUsersAsync();
+        var userName = user.FirstOrDefault(u => u.Id == userId)?.UserName ?? "Unknown";
+
+        var viewModel = new UserInterestsViewModel
+        {
+            UserId = userId,
+            UserName = userName,
+            Interests = interests
+        };
+
+        return View(viewModel);
+    }
+
+    public async Task<IActionResult> UserAuthorInterests(string userId)
+    {
+        var interests = await _userService.GetUserAuthorInterestsAsync(userId);
+        var user = await _userService.GetAllUsersAsync();
+        var userName = user.FirstOrDefault(u => u.Id == userId)?.UserName ?? "Unknown";
+
+        var viewModel = new UserInterestsViewModel
+        {
+            UserId = userId,
+            UserName = userName,
+            Interests = interests
+        };
+
+        return View(viewModel);
     }
 
     public async Task<IActionResult> Users()
