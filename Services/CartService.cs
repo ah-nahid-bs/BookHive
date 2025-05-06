@@ -76,6 +76,7 @@ public class CartService : ICartService
             var userId = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated
                 ? _httpContextAccessor.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                 : null;
+                        
 
             if (userId != null)
             {
@@ -105,6 +106,7 @@ public class CartService : ICartService
 
             if (userId != null)
             {
+                Console.WriteLine($"UserId: {userId}, CartItemId: {cartItemId}");
                 var cartItem = await _cartRepository.GetCartItemByIdAsync(userId, cartItemId);
                 if (cartItem == null || quantity <= 0)
                 {

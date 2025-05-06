@@ -33,6 +33,7 @@ namespace BookHive.Controllers
             {
                 return Json(new { success = false, message = "Invalid cart item ID or quantity." });
             }
+            Console.WriteLine($"Updating cart item: {model.CartItemId} with quantity: {model.Quantity}");   
 
             var success = await _cartService.UpdateCartItemAsync(model.CartItemId, model.Quantity);
             return Json(new { success, message = success ? null : "Could not update cart item." });

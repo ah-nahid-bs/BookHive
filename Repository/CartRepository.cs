@@ -69,6 +69,7 @@ public class CartRepository : ICartRepository
     }
     public async Task<CartItem> GetCartItemByIdAsync(string userId, int cartItemId)
     {
+        Console.WriteLine($"UserId: {userId}, CartItemId: {cartItemId}");
         return await _context.CartItems
             .Include(c => c.Cart)
             .FirstOrDefaultAsync(c => c.Id == cartItemId && c.Cart.UserId == userId);
